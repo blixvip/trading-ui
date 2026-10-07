@@ -143,7 +143,7 @@ legitimate, it just shouldn't be a surprise.
 ```bash
 npm install
 npm run dev        # showcase at http://localhost:4310
-npm test           # 58 assertions: formatting, market invariants, order rules, SSR render
+npm test           # 66 assertions: formatting, market invariants, order rules, SSR render
 npm run typecheck
 npm run build      # typecheck + test + library + registry
 ```
