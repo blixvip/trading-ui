@@ -34,6 +34,8 @@ npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/
 | `OrderBlotter`     | Today's orders and their state, with inline cancel                          |
 | `Panel`            | Widget frame that actually shrinks inside a grid layout                     |
 | `Price` `Delta` `Stat` `NumberField` `SegmentedControl` | The small parts the rest are built from |
+| `EmptyState` + `*Art`  | Authored SVG empty states — an empty ladder, a blank ticket, a spent tape    |
+| `Skeleton` + `*Skeleton` | Loading states shaped like the thing they replace                          |
 
 Plus `useMockMarket` — a seeded, deterministic market feed so every component
 is demoable and testable without a data provider.
@@ -134,6 +136,12 @@ a buy even when it's lower than the one before it.
 **Positions use signed quantities.** One formula covers long and short, so no
 code path can disagree about which way a short makes money.
 
+**Empty and loading are designed, not left over.** A trading screen is empty
+before the open and on every new account, so each list component ships an
+authored SVG empty state and a skeleton shaped like the thing it is waiting for
+— a ladder skeleton has a spread row — which means the layout never jumps when
+data lands.
+
 **The ticket blocks fat-fingers and warns about risk.** A buy stop below the
 market is rejected (it would trigger instantly). Going short only warns — it's
 legitimate, it just shouldn't be a surprise.
@@ -142,14 +150,14 @@ legitimate, it just shouldn't be a surprise.
 
 ```bash
 npm install
-npm run dev        # showcase at http://localhost:4310
+npm run dev        # product site at http://localhost:4310
 npm test           # 66 assertions: formatting, market invariants, order rules, SSR render
 npm run typecheck
 npm run build      # typecheck + test + library + registry
 ```
 
-The showcase reads its initial state from the query string, so every variant has
-a URL: `?view=gallery&theme=light&palette=colorblind&live=0`.
+The site reads its initial state from the query string, so every variant has a
+URL: `?theme=light&palette=colorblind&live=0&symbol=NVDA`.
 
 ### Repo layout
 
@@ -160,6 +168,8 @@ src/lib/
   data/                 deterministic mock market
   styles.css            tokens + Tailwind theme
   format.ts canvas.ts hooks.ts utils.ts
+src/site/                    the product site (hero terminal, catalogue, docs)
+public/                      favicon.svg, og.svg
 scripts/build-registry.mjs   generates registry.json and r/*.json
 test/smoke.tsx               the test suite
 ```

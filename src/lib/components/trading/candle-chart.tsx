@@ -18,6 +18,9 @@ import { useElementSize } from '../../hooks';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Candle, Instrument } from '../../types';
 import { cn } from '../../utils';
+import { EmptyState } from './empty-state';
+import { EmptyChartArt } from './illustrations';
+import { CandleChartSkeleton } from './skeletons';
 
 export type CandleChartKind = 'candle' | 'hollow' | 'line' | 'area';
 
@@ -45,6 +48,8 @@ export interface CandleChartProps {
   movingAverages?: MovingAverage[];
   /** Fires with the hovered bar, or null on leave - for syncing sibling panes. */
   onHoverCandle?: (candle: Candle | null, index: number) => void;
+  /** Shows a chart-shaped skeleton instead of the series. */
+  loading?: boolean;
   className?: string;
 }
 
@@ -108,6 +113,7 @@ export function CandleChart({
   crosshair = true,
   movingAverages,
   onHoverCandle,
+  loading = false,
   className,
 }: CandleChartProps) {
   const inst = useInstrument(instrument);
@@ -376,6 +382,19 @@ export function CandleChart({
     inst.pricePrecision,
     wrapRef,
   ]);
+
+  if (loading) return <CandleChartSkeleton height={height ?? 320} className={className} />;
+
+  if (candles.length === 0) {
+    return (
+      <EmptyState
+        className={cn('h-full justify-center', className)}
+        art={<EmptyChartArt />}
+        title="No price history"
+        description="Bars appear once this instrument has traded. Pick a different interval or symbol."
+      />
+    );
+  }
 
   const hovered = hover ? candles[hover.index] : undefined;
 

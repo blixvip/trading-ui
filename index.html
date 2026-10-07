@@ -4,14 +4,27 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="dark light" />
-    <title>trading-ui</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>trading-ui — the trading layer for shadcn/ui</title>
+    <meta
+      name="description"
+      content="React components for trading interfaces: candlestick and depth charts, order book, time and sales, order ticket, positions and blotter. Radix primitives, shadcn tokens, copy-paste registry."
+    />
+    <meta property="og:title" content="trading-ui — the trading layer for shadcn/ui" />
+    <meta
+      property="og:description"
+      content="Candlestick and depth charts, a price ladder, time and sales, a tick-snapped order ticket, positions and a blotter."
+    />
+    <meta property="og:image" content="/og.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
     <style>
+      /* Painted before the bundle lands so there is no white flash. */
       html, body, #root { height: 100%; margin: 0; }
-      body { background: #0b0e14; }
+      body { background: #07090e; }
     </style>
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/demo/main.tsx"></script>
+    <script type="module" src="/src/site/main.tsx"></script>
   </body>
 </html>

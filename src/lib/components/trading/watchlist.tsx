@@ -1,7 +1,11 @@
+import type { ReactNode } from 'react';
 import { formatPrice } from '../../format';
 import type { Quote } from '../../types';
 import { cn } from '../../utils';
 import { Delta } from './delta';
+import { EmptyState } from './empty-state';
+import { EmptyWatchlistArt } from './illustrations';
+import { WatchlistSkeleton } from './skeletons';
 import { Sparkline } from './sparkline';
 
 export interface WatchlistProps {
@@ -13,6 +17,10 @@ export interface WatchlistProps {
   showSparkline?: boolean;
   /** Absolute change instead of percent. */
   showAbsolute?: boolean;
+  /** Shows a row-shaped skeleton instead of the quotes. */
+  loading?: boolean;
+  /** Rendered in the empty state - typically an "add symbol" control. */
+  emptyAction?: ReactNode;
   className?: string;
 }
 
@@ -30,10 +38,22 @@ export function Watchlist({
   pricePrecision = 2,
   showSparkline = true,
   showAbsolute = false,
+  loading = false,
+  emptyAction,
   className,
 }: WatchlistProps) {
+  if (loading) return <WatchlistSkeleton className={className} />;
+
   if (quotes.length === 0) {
-    return <div className="text-muted-foreground p-5 text-center text-xs">Watchlist is empty</div>;
+    return (
+      <EmptyState
+        className={className}
+        art={<EmptyWatchlistArt />}
+        title="Nothing on the list"
+        description="Add the instruments you want to keep an eye on and their price, change and trend show up here."
+        action={emptyAction}
+      />
+    );
   }
 
   return (

@@ -323,6 +323,21 @@
       "description": "Canvas OHLC chart: candles, hollow candles, line or area, with volume, moving averages, crosshair and an OHLC readout.",
       "files": [
         {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
           "path": "src/lib/components/trading/candle-chart.tsx",
           "type": "registry:component",
           "target": "components/trading/candle-chart.tsx"
@@ -409,6 +424,21 @@
       "description": "Ladder or two-column book with depth bars scaled across both sides, a spread row, and markers for your own resting orders.",
       "files": [
         {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
           "path": "src/lib/components/trading/order-book.tsx",
           "type": "registry:component",
           "target": "components/trading/order-book.tsx"
@@ -441,6 +471,21 @@
       "title": "Trade tape",
       "description": "Time and sales, colored by aggressor side, with block-print highlighting.",
       "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
         {
           "path": "src/lib/components/trading/trade-tape.tsx",
           "type": "registry:component",
@@ -523,6 +568,21 @@
         "lucide-react"
       ],
       "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
         {
           "path": "src/lib/components/trading/watchlist.tsx",
           "type": "registry:component",
@@ -711,6 +771,21 @@
       ],
       "files": [
         {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
           "path": "src/lib/components/trading/positions-table.tsx",
           "type": "registry:component",
           "target": "components/trading/positions-table.tsx"
@@ -767,6 +842,21 @@
         "class-variance-authority"
       ],
       "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
         {
           "path": "src/lib/components/trading/order-blotter.tsx",
           "type": "registry:component",

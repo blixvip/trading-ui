@@ -11,6 +11,9 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
+import { EmptyState } from './empty-state';
+import { EmptyOrdersArt } from './illustrations';
+import { TableSkeleton } from './skeletons';
 
 export interface OrderBlotterProps {
   orders: Order[];
@@ -18,6 +21,8 @@ export interface OrderBlotterProps {
   /** Shows a cancel button on working and partially filled orders. */
   onCancel?: (order: Order) => void;
   onSelect?: (order: Order) => void;
+  /** Shows a table-shaped skeleton instead of the rows. */
+  loading?: boolean;
   className?: string;
 }
 
@@ -35,13 +40,23 @@ export function OrderBlotter({
   instrument,
   onCancel,
   onSelect,
+  loading = false,
   className,
 }: OrderBlotterProps) {
   const inst = useInstrument(instrument);
   const sizeDigits = inst.sizePrecision ?? 0;
 
+  if (loading) return <TableSkeleton rows={3} columns={onCancel ? 9 : 8} className={className} />;
+
   if (orders.length === 0) {
-    return <div className="text-muted-foreground p-5 text-center text-xs">No orders today</div>;
+    return (
+      <EmptyState
+        className={className}
+        art={<EmptyOrdersArt />}
+        title="No orders today"
+        description="Everything you send this session shows up here — working, filled or cancelled — with its fill price."
+      />
+    );
   }
 
   return (

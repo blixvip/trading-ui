@@ -3,6 +3,9 @@ import { formatCompact, formatPercent, formatPrice, formatQuantity } from '../..
 import { useInstrument } from '../../theme/theme-provider';
 import type { BookLevel, Instrument, OrderBookSnapshot } from '../../types';
 import { cn } from '../../utils';
+import { EmptyState } from './empty-state';
+import { EmptyBookArt } from './illustrations';
+import { OrderBookSkeleton } from './skeletons';
 
 export type BookLayout = 'ladder' | 'columns';
 
@@ -23,6 +26,8 @@ export interface OrderBookProps {
   myOrders?: Record<number, number>;
   /** Clicking a level. Wire it to prefilling the ticket's price. */
   onSelectLevel?: (level: BookLevel, side: 'bid' | 'ask') => void;
+  /** Shows a ladder-shaped skeleton instead of the book. */
+  loading?: boolean;
   className?: string;
 }
 
@@ -59,6 +64,7 @@ export function OrderBook({
   cumulativeBars = false,
   myOrders,
   onSelectLevel,
+  loading = false,
   className,
 }: OrderBookProps) {
   const inst = useInstrument(instrument);
@@ -81,6 +87,19 @@ export function OrderBook({
       mid: m,
     };
   }, [book, depth, cumulativeBars]);
+
+  if (loading) return <OrderBookSkeleton depth={Math.min(depth, 8)} className={className} />;
+
+  if (bids.length === 0 && asks.length === 0) {
+    return (
+      <EmptyState
+        className={className}
+        art={<EmptyBookArt />}
+        title="No resting liquidity"
+        description="The book is empty. Levels appear here once the venue starts quoting this instrument."
+      />
+    );
+  }
 
   const gridCols = showTotal ? '1.1fr 1fr 1fr' : '1.1fr 1fr';
 

@@ -3,6 +3,9 @@ import { formatPrice, formatQuantity, formatTime } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument, Trade } from '../../types';
 import { cn } from '../../utils';
+import { EmptyState } from './empty-state';
+import { EmptyTapeArt } from './illustrations';
+import { TradeTapeSkeleton } from './skeletons';
 
 export interface TradeTapeProps {
   /** Newest first. */
@@ -14,6 +17,8 @@ export interface TradeTapeProps {
   blockSize?: number;
   withMillis?: boolean;
   onSelectTrade?: (trade: Trade) => void;
+  /** Shows a tape-shaped skeleton instead of the prints. */
+  loading?: boolean;
   className?: string;
 }
 
@@ -33,6 +38,7 @@ export function TradeTape({
   blockSize,
   withMillis = false,
   onSelectTrade,
+  loading = false,
   className,
 }: TradeTapeProps) {
   const inst = useInstrument(instrument);
@@ -61,6 +67,19 @@ export function TradeTape({
     return true;
   };
 
+  if (loading) return <TradeTapeSkeleton rows={Math.min(maxRows, 10)} className={className} />;
+
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        className={className}
+        art={<EmptyTapeArt />}
+        title="No prints yet"
+        description="Executed trades stream in here as they cross. Nothing has traded in this instrument yet."
+      />
+    );
+  }
+
   return (
     <div className={cn('flex flex-col text-xs', className)}>
       {showHeader && (
@@ -69,9 +88,6 @@ export function TradeTape({
           <span>Price</span>
           <span>Size</span>
         </div>
-      )}
-      {rows.length === 0 && (
-        <div className="text-muted-foreground p-5 text-center text-xs">No prints yet</div>
       )}
       {rows.map((trade) => {
         const block = blockSize !== undefined && trade.size >= blockSize;

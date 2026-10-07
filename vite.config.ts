@@ -6,5 +6,5 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: { port: 4310, open: false },
-  build: { outDir: 'dist-demo' },
+  build: { outDir: 'dist-site' },
 });

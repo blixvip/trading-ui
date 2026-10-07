@@ -48,6 +48,9 @@ const UI = {
 
 const TRADING = (name) => `src/lib/components/trading/${name}.tsx`;
 
+/** Empty-state and loading scaffolding every list component imports. */
+const STATES = [TRADING('empty-state'), TRADING('illustrations'), TRADING('skeletons')];
+
 /**
  * Every item declares the npm packages and source files it actually needs, so
  * `add`-ing one component never drags in the whole library.
@@ -155,6 +158,7 @@ const items = [
     description:
       'Canvas OHLC chart: candles, hollow candles, line or area, with volume, moving averages, crosshair and an OHLC readout.',
     files: [
+      ...STATES,
       TRADING('candle-chart'),
       ...LIB.canvas,
       ...LIB.format,
@@ -185,14 +189,16 @@ const items = [
     title: 'Order book',
     description:
       'Ladder or two-column book with depth bars scaled across both sides, a spread row, and markers for your own resting orders.',
-    files: [TRADING('order-book'), ...LIB.format, ...LIB.theme, ...LIB.utils],
+    files: [
+      ...STATES,TRADING('order-book'), ...LIB.format, ...LIB.theme, ...LIB.utils],
   },
   {
     name: 'trade-tape',
     type: 'registry:component',
     title: 'Trade tape',
     description: 'Time and sales, colored by aggressor side, with block-print highlighting.',
-    files: [TRADING('trade-tape'), ...LIB.format, ...LIB.theme, ...LIB.utils],
+    files: [
+      ...STATES,TRADING('trade-tape'), ...LIB.format, ...LIB.theme, ...LIB.utils],
   },
   {
     name: 'ticker-tape',
@@ -209,6 +215,7 @@ const items = [
     title: 'Watchlist',
     description: 'Symbol list with price, change and an inline sparkline, as a real listbox.',
     files: [
+      ...STATES,
       TRADING('watchlist'),
       TRADING('delta'),
       TRADING('sparkline'),
@@ -275,6 +282,7 @@ const items = [
     description:
       'Open positions marked to market, with signed quantities so shorts need no special case.',
     files: [
+      ...STATES,
       TRADING('positions-table'),
       TRADING('delta'),
       UI.badge,
@@ -292,6 +300,7 @@ const items = [
     title: 'Order blotter',
     description: "Today's orders and their state, with inline cancel.",
     files: [
+      ...STATES,
       TRADING('order-blotter'),
       UI.badge,
       UI.button,

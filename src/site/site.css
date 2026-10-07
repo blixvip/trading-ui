@@ -1,0 +1,101 @@
+/* Self-hosted faces. The library names these in --font-sans / --font-mono and
+   falls back to the platform stack; the site is where they actually load. */
+@import '@fontsource-variable/ibm-plex-sans/index.css';
+@import '@fontsource/ibm-plex-mono/400.css';
+@import '@fontsource/ibm-plex-mono/500.css';
+@import '@fontsource/ibm-plex-mono/600.css';
+
+@import '../lib/styles.css';
+
+@source './';
+
+/*
+  The page ground sits *below* the component --background, so panels read as
+  lit instruments resting on a dark bench rather than dissolving into it.
+*/
+:root,
+[data-tu-theme='dark'] {
+  --site-bg: #07090e;
+  --site-rule: #1d2636;
+}
+
+[data-tu-theme='light'] {
+  --site-bg: #eceff5;
+  --site-rule: #d7dde7;
+}
+
+@theme inline {
+  --color-site-bg: var(--site-bg);
+  --color-site-rule: var(--site-rule);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--site-bg);
+  font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+  The one authored moment: on load the instrument powers up. The grid resolves,
+  the rules draw themselves across, and the terminal rises into place. Nothing
+  after this animates except the data, which is the only thing that should.
+*/
+@keyframes site-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+@keyframes site-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes site-grid-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.rise {
+  animation: site-rise 900ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.draw {
+  transform-origin: left;
+  animation: site-draw 1100ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.grid-in {
+  animation: site-grid-in 1400ms ease-out backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .draw,
+  .grid-in {
+    animation: none;
+  }
+}

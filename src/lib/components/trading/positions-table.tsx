@@ -21,6 +21,9 @@ import {
   TableRow,
 } from '../ui/table';
 import { Delta } from './delta';
+import { EmptyState } from './empty-state';
+import { EmptyPositionsArt } from './illustrations';
+import { TableSkeleton } from './skeletons';
 
 export interface PositionRow extends Position {
   marketValue: number;
@@ -36,6 +39,8 @@ export interface PositionsTableProps {
   onSelect?: (position: Position) => void;
   /** Adds a flatten button per row. */
   onClose?: (position: Position) => void;
+  /** Shows a table-shaped skeleton instead of the rows. */
+  loading?: boolean;
   className?: string;
 }
 
@@ -68,6 +73,7 @@ export function PositionsTable({
   showTotals = true,
   onSelect,
   onClose,
+  loading = false,
   className,
 }: PositionsTableProps) {
   const inst = useInstrument(instrument);
@@ -87,8 +93,17 @@ export function PositionsTable({
     [rows],
   );
 
+  if (loading) return <TableSkeleton rows={3} columns={onClose ? 7 : 6} className={className} />;
+
   if (rows.length === 0) {
-    return <div className="text-muted-foreground p-5 text-center text-xs">No open positions</div>;
+    return (
+      <EmptyState
+        className={className}
+        art={<EmptyPositionsArt />}
+        title="Flat"
+        description="No open positions. Filled orders build a position here, marked to market as prices move."
+      />
+    );
   }
 
   return (
