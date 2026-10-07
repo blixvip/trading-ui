@@ -1,0 +1,231 @@
+/* `source(none)` turns off Tailwind's automatic content detection and the
+   explicit @source below scopes scanning to the library itself, so the
+   published stylesheet contains the classes these components use and nothing
+   from whatever app happens to be in the same repo. */
+@import 'tailwindcss' source(none);
+@import 'tw-animate-css';
+
+@source './';
+
+/*
+  trading-ui theme.
+
+  Token names mirror shadcn/ui (--background, --card, --primary, --border, ...)
+  so these components drop straight into an existing shadcn app and inherit its
+  look. On top of that sits the layer shadcn has no vocabulary for: direction
+  (--up / --down / --flat), book depth, and the chart surface.
+
+  Colors are hex, not oklch. The charts paint on a 2D canvas, and
+  `ctx.fillStyle` only accepts a color the browser can parse - hex is
+  universally safe where CSS Color 4 functions are not. Everything else about
+  the token layer follows shadcn.
+*/
+
+@custom-variant dark (&:where(.dark, .dark *, [data-tu-theme='dark'], [data-tu-theme='dark'] *));
+
+:root,
+[data-tu-theme='light'] {
+  --radius: 0.5rem;
+
+  --background: #f4f6fa;
+  --foreground: #121823;
+  --card: #ffffff;
+  --card-foreground: #121823;
+  --popover: #ffffff;
+  --popover-foreground: #121823;
+  --primary: #2f6fe0;
+  --primary-foreground: #ffffff;
+  --secondary: #eef2f8;
+  --secondary-foreground: #1b2330;
+  --muted: #f7f9fc;
+  --muted-foreground: #5b6779;
+  --accent: #eef2f8;
+  --accent-foreground: #121823;
+  --destructive: #cf3b36;
+  --destructive-foreground: #ffffff;
+  --border: #dfe5ee;
+  --input: #dfe5ee;
+  --ring: #2f6fe0;
+
+  /* Direction. The single most load-bearing signal in the whole library. */
+  --up: #0f8a63;
+  --up-foreground: #ffffff;
+  --up-muted: #0f8a631f;
+  --up-line: #0f8a6373;
+  --down: #cf3b36;
+  --down-foreground: #ffffff;
+  --down-muted: #cf3b361f;
+  --down-line: #cf3b3673;
+  --flat: #8b97a9;
+
+  /* Chart surface. Separate from --card so a chart can sit on its own ground. */
+  --chart-grid: #e6ebf3;
+  --chart-axis: #8b97a9;
+  --chart-crosshair: #9aa6b8;
+}
+
+.dark,
+[data-tu-theme='dark'] {
+  --background: #0b0e14;
+  --foreground: #e6ecf5;
+  --card: #111622;
+  --card-foreground: #e6ecf5;
+  --popover: #161d2c;
+  --popover-foreground: #e6ecf5;
+  --primary: #4c8dff;
+  --primary-foreground: #06101f;
+  --secondary: #1d2638;
+  --secondary-foreground: #e6ecf5;
+  --muted: #161d2c;
+  --muted-foreground: #93a1b8;
+  --accent: #1d2638;
+  --accent-foreground: #e6ecf5;
+  --destructive: #e0544e;
+  --destructive-foreground: #ffffff;
+  --border: #222c3f;
+  --input: #2a364c;
+  --ring: #4c8dff;
+
+  --up: #26a37d;
+  --up-foreground: #04150f;
+  --up-muted: #26a37d29;
+  --up-line: #26a37d8c;
+  --down: #e0544e;
+  --down-foreground: #1a0605;
+  --down-muted: #e0544e29;
+  --down-line: #e0544e8c;
+  --flat: #7a879c;
+
+  --chart-grid: #1b2435;
+  --chart-axis: #5f6d84;
+  --chart-crosshair: #31405c;
+}
+
+/*
+  Deuteranopia-safe direction pair: blue up, amber down. Red/green is the one
+  pairing ~8% of men cannot separate, and in this library direction carries
+  meaning on every surface, so the swap is a first-class mode rather than a
+  user-supplied override.
+*/
+[data-tu-palette='colorblind'] {
+  --up: #2f6fe0;
+  --up-muted: #2f6fe01f;
+  --up-line: #2f6fe073;
+  --down: #c1670a;
+  --down-muted: #c1670a1f;
+  --down-line: #c1670a73;
+}
+
+[data-tu-theme='dark'][data-tu-palette='colorblind'],
+.dark [data-tu-palette='colorblind'],
+[data-tu-palette='colorblind'].dark {
+  --up: #4c8dff;
+  --up-muted: #4c8dff29;
+  --up-line: #4c8dff8c;
+  --down: #e8913c;
+  --down-muted: #e8913c29;
+  --down-line: #e8913c8c;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-up: var(--up);
+  --color-up-foreground: var(--up-foreground);
+  --color-up-muted: var(--up-muted);
+  --color-up-line: var(--up-line);
+  --color-down: var(--down);
+  --color-down-foreground: var(--down-foreground);
+  --color-down-muted: var(--down-muted);
+  --color-down-line: var(--down-line);
+  --color-flat: var(--flat);
+
+  --color-chart-grid: var(--chart-grid);
+  --color-chart-axis: var(--chart-axis);
+  --color-chart-crosshair: var(--chart-crosshair);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-mono:
+    ui-monospace, 'SF Mono', 'JetBrains Mono', 'Cascadia Mono', Menlo, Consolas,
+    monospace;
+
+  --animate-flash-up: flash-up 400ms ease-out;
+  --animate-flash-down: flash-down 400ms ease-out;
+  --animate-tape-in: tape-in 240ms ease-out;
+  --animate-marquee: marquee linear infinite;
+
+  @keyframes flash-up {
+    from {
+      background-color: var(--up-muted);
+      color: var(--up);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+  @keyframes flash-down {
+    from {
+      background-color: var(--down-muted);
+      color: var(--down);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+  @keyframes tape-in {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  /*
+    Every figure in a trading UI is read as a column, so numerals are tabular
+    everywhere by default. `font-mono` alone does not guarantee this in all
+    font stacks.
+  */
+  .tabular,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}

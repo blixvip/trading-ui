@@ -1,0 +1,87 @@
+{
+  "name": "trading-ui",
+  "version": "0.1.0",
+  "description": "The trading layer for shadcn/ui: candlestick and depth charts, order book, time and sales, order ticket, positions and blotter. Radix primitives, Tailwind tokens, copy-paste registry.",
+  "keywords": [
+    "react",
+    "trading",
+    "ui",
+    "components",
+    "shadcn",
+    "radix-ui",
+    "tailwindcss",
+    "candlestick",
+    "order-book",
+    "fintech",
+    "charts"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": [
+    "**/*.css",
+    "./src/lib/index.ts",
+    "./dist/index.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist",
+    "r",
+    "registry.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run typecheck && npm run test && npm run build:lib && npm run registry",
+    "build:lib": "vite build --config vite.lib.config.ts && npm run build:types",
+    "build:types": "tsc -p tsconfig.lib.json",
+    "build:demo": "vite build",
+    "registry": "node scripts/build-registry.mjs",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "test": "esbuild test/smoke.tsx --bundle --platform=node --format=cjs --jsx=automatic --loader:.css=empty --external:react --external:react-dom --outfile=node_modules/.tmp/smoke.cjs && node node_modules/.tmp/smoke.cjs"
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "esbuild": "^0.28.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.3",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0"
+  },
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.2.0",
+    "@radix-ui/react-label": "^2.1.16",
+    "@radix-ui/react-scroll-area": "^1.3.0",
+    "@radix-ui/react-select": "^2.3.8",
+    "@radix-ui/react-separator": "^1.1.16",
+    "@radix-ui/react-slider": "^1.5.0",
+    "@radix-ui/react-slot": "^1.4.0",
+    "@radix-ui/react-tabs": "^1.1.22",
+    "@radix-ui/react-toggle-group": "^1.1.20",
+    "@radix-ui/react-tooltip": "^1.3.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.52.0",
+    "tailwind-merge": "^3.7.0"
+  }
+}

@@ -1,0 +1,6 @@
+/* Demo entry: the library stylesheet plus this app's own class scanning.
+   The library scopes its @source to src/lib so the published CSS stays lean,
+   which means the showcase has to opt its own files in. */
+@import '../lib/styles.css';
+
+@source './';

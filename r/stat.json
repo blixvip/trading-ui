@@ -1,0 +1,27 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "stat",
+  "type": "registry:component",
+  "title": "Stat",
+  "description": "Labelled figure for a KPI strip.",
+  "files": [
+    {
+      "path": "src/lib/components/trading/stat.tsx",
+      "type": "registry:component",
+      "target": "components/trading/stat.tsx",
+      "content": "import type { ReactNode } from 'react';\nimport type { Direction } from '../../types';\nimport { cn } from '../../utils';\n\nexport interface StatProps {\n  label: ReactNode;\n  value: ReactNode;\n  /** Small trailing element - a Delta, a unit, a badge. */\n  hint?: ReactNode;\n  /** Color the value by direction. */\n  direction?: Direction;\n  size?: 'sm' | 'md' | 'lg';\n  className?: string;\n}\n\nconst VALUE_SIZE = { sm: 'text-sm', md: 'text-base', lg: 'text-2xl' } as const;\n\n/** A labelled figure. The unit of a stat row or a KPI strip. */\nexport function Stat({ label, value, hint, direction, size = 'md', className }: StatProps) {\n  return (\n    <div className={cn('flex min-w-0 flex-col gap-0.5', className)}>\n      <span className=\"text-muted-foreground text-[10px] font-medium tracking-wider whitespace-nowrap uppercase\">\n        {label}\n      </span>\n      <span className=\"flex items-baseline gap-1.5\">\n        <span\n          className={cn(\n            'font-mono leading-tight font-semibold tabular-nums',\n            VALUE_SIZE[size],\n            direction === 'up' && 'text-up',\n            direction === 'down' && 'text-down',\n            direction === 'flat' && 'text-flat',\n          )}\n        >\n          {value}\n        </span>\n        {hint}\n      </span>\n    </div>\n  );\n}\n"
+    },
+    {
+      "path": "src/lib/types.ts",
+      "type": "registry:lib",
+      "target": "lib/trading/types.ts",
+      "content": "/** Shared domain types. Deliberately plain so any feed can map onto them. */\n\nexport type Side = 'buy' | 'sell';\nexport type Direction = 'up' | 'down' | 'flat';\n\n/** One OHLCV bar. `time` is epoch milliseconds at the bar's open. */\nexport interface Candle {\n  time: number;\n  open: number;\n  high: number;\n  low: number;\n  close: number;\n  volume: number;\n}\n\n/** A single price level in the book. */\nexport interface BookLevel {\n  price: number;\n  size: number;\n}\n\nexport interface OrderBookSnapshot {\n  /** Highest price first. */\n  bids: BookLevel[];\n  /** Lowest price first. */\n  asks: BookLevel[];\n}\n\nexport interface Trade {\n  id: string;\n  time: number;\n  price: number;\n  size: number;\n  /** Aggressor side: `buy` means it lifted the offer. */\n  side: Side;\n}\n\nexport interface Quote {\n  symbol: string;\n  name?: string;\n  last: number;\n  /** Previous session close, used for the day change. */\n  prevClose: number;\n  bid?: number;\n  ask?: number;\n  dayHigh?: number;\n  dayLow?: number;\n  volume?: number;\n  /** Optional intraday series for an inline sparkline. */\n  history?: number[];\n}\n\nexport interface Position {\n  symbol: string;\n  /** Signed: negative is short. */\n  quantity: number;\n  avgPrice: number;\n  markPrice: number;\n}\n\nexport type OrderType = 'market' | 'limit' | 'stop' | 'stop-limit';\nexport type OrderStatus = 'working' | 'filled' | 'partial' | 'cancelled' | 'rejected';\n\nexport interface OrderDraft {\n  symbol: string;\n  side: Side;\n  type: OrderType;\n  quantity: number;\n  /** Required for limit / stop-limit. */\n  limitPrice?: number;\n  /** Required for stop / stop-limit. */\n  stopPrice?: number;\n  timeInForce: TimeInForce;\n}\n\nexport type TimeInForce = 'day' | 'gtc' | 'ioc' | 'fok';\n\nexport interface Order extends OrderDraft {\n  id: string;\n  time: number;\n  status: OrderStatus;\n  filledQuantity: number;\n  avgFillPrice?: number;\n}\n\n/** Price/size formatting rules for an instrument. */\nexport interface Instrument {\n  symbol: string;\n  name?: string;\n  /** Decimal places for price. */\n  pricePrecision: number;\n  /** Minimum price increment. */\n  tickSize: number;\n  /** Decimal places for quantity. */\n  sizePrecision?: number;\n  /** Quote-currency symbol, e.g. \"$\". */\n  currency?: string;\n}\n"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "type": "registry:lib",
+      "target": "lib/trading/utils.ts",
+      "content": "import { clsx, type ClassValue } from 'clsx';\nimport { twMerge } from 'tailwind-merge';\n\n/**\n * Merge Tailwind classes with later ones winning - the same `cn` shadcn/ui\n * uses, so a consumer can override any class on any component by passing\n * `className`, with no specificity war.\n */\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs));\n}\n"
+    }
+  ]
+}

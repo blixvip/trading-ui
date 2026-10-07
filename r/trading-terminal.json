@@ -1,0 +1,28 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "trading-terminal",
+  "type": "registry:block",
+  "title": "Trading terminal",
+  "description": "Every trading-ui component at once: chart, book, depth, tape, ticket, positions and blotter.",
+  "registryDependencies": [
+    "@trading-ui/trading-provider",
+    "@trading-ui/panel",
+    "@trading-ui/segmented-control",
+    "@trading-ui/number-field",
+    "@trading-ui/price",
+    "@trading-ui/delta",
+    "@trading-ui/stat",
+    "@trading-ui/sparkline",
+    "@trading-ui/candle-chart",
+    "@trading-ui/depth-chart",
+    "@trading-ui/order-book",
+    "@trading-ui/trade-tape",
+    "@trading-ui/ticker-tape",
+    "@trading-ui/watchlist",
+    "@trading-ui/symbol-header",
+    "@trading-ui/order-ticket",
+    "@trading-ui/positions-table",
+    "@trading-ui/order-blotter"
+  ],
+  "files": []
+}

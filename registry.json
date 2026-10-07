@@ -1,0 +1,840 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "trading-ui",
+  "homepage": "https://github.com/OWNER/trading-ui",
+  "items": [
+    {
+      "name": "trading-theme",
+      "type": "registry:theme",
+      "title": "Trading theme",
+      "description": "Direction tokens (up / down / flat) and chart surface tokens layered onto the shadcn palette, in light, dark, and a deuteranopia-safe variant.",
+      "dependencies": [
+        "tw-animate-css"
+      ],
+      "files": [
+        {
+          "path": "src/lib/styles.css",
+          "type": "registry:style",
+          "target": "app/trading-ui.css"
+        }
+      ]
+    },
+    {
+      "name": "trading-lib",
+      "type": "registry:lib",
+      "title": "Trading utilities",
+      "description": "Number and time formatting, tick rounding, canvas scales, and the hooks the charts need (element size, price flash, reduced motion).",
+      "dependencies": [
+        "clsx",
+        "tailwind-merge"
+      ],
+      "files": [
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/canvas.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/canvas.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        }
+      ]
+    },
+    {
+      "name": "mock-market",
+      "type": "registry:lib",
+      "title": "Mock market feed",
+      "description": "Seeded, deterministic market data: OHLCV bars, an order book, prints and quotes, plus a hook that ticks them. For demos, stories and tests - not market data.",
+      "files": [
+        {
+          "path": "src/lib/data/mock-market.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/mock-market.ts"
+        },
+        {
+          "path": "src/lib/data/use-mock-market.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/use-mock-market.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        }
+      ]
+    },
+    {
+      "name": "trading-provider",
+      "type": "registry:component",
+      "title": "TradingProvider",
+      "description": "Scopes theme, direction palette and instrument formatting defaults to a subtree.",
+      "dependencies": [
+        "@radix-ui/react-tooltip"
+      ],
+      "registryDependencies": [
+        "@trading-ui/trading-theme"
+      ],
+      "files": [
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/tooltip.tsx",
+          "type": "registry:component",
+          "target": "components/ui/tooltip.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        }
+      ]
+    },
+    {
+      "name": "panel",
+      "type": "registry:component",
+      "title": "Panel",
+      "description": "Widget frame: fixed header, flexible body that shrinks inside a grid layout.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/panel.tsx",
+          "type": "registry:component",
+          "target": "components/trading/panel.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/card.tsx",
+          "type": "registry:component",
+          "target": "components/ui/card.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "segmented-control",
+      "type": "registry:component",
+      "title": "Segmented control",
+      "description": "Interval picker and side switch on Radix ToggleGroup, with buy/sell direction tinting and no way to end up with nothing selected.",
+      "dependencies": [
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/segmented-control.tsx",
+          "type": "registry:component",
+          "target": "components/trading/segmented-control.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/toggle-group.tsx",
+          "type": "registry:component",
+          "target": "components/ui/toggle-group.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "number-field",
+      "type": "registry:component",
+      "title": "Number field",
+      "description": "Price and quantity entry that keeps your keystrokes intact and refuses to change value on scroll.",
+      "dependencies": [
+        "@radix-ui/react-label",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/number-field.tsx",
+          "type": "registry:component",
+          "target": "components/trading/number-field.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/label.tsx",
+          "type": "registry:component",
+          "target": "components/ui/label.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "price",
+      "type": "registry:component",
+      "title": "Price",
+      "description": "Tabular price with optional tick flash and big-figure emphasis.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/price.tsx",
+          "type": "registry:component",
+          "target": "components/trading/price.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "delta",
+      "type": "registry:component",
+      "title": "Delta",
+      "description": "Change indicator that carries direction three ways - color, icon and sign - so it survives grayscale and colorblindness.",
+      "dependencies": [
+        "lucide-react",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "stat",
+      "type": "registry:component",
+      "title": "Stat",
+      "description": "Labelled figure for a KPI strip.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/stat.tsx",
+          "type": "registry:component",
+          "target": "components/trading/stat.tsx"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "sparkline",
+      "type": "registry:component",
+      "title": "Sparkline",
+      "description": "Inline SVG trend line with optional area fill and baseline.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/sparkline.tsx",
+          "type": "registry:component",
+          "target": "components/trading/sparkline.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "candle-chart",
+      "type": "registry:component",
+      "title": "Candle chart",
+      "description": "Canvas OHLC chart: candles, hollow candles, line or area, with volume, moving averages, crosshair and an OHLC readout.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/candle-chart.tsx",
+          "type": "registry:component",
+          "target": "components/trading/candle-chart.tsx"
+        },
+        {
+          "path": "src/lib/canvas.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/canvas.ts"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "depth-chart",
+      "type": "registry:component",
+      "title": "Depth chart",
+      "description": "Cumulative bid/ask depth, drawn as steps rather than a smoothed curve.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/depth-chart.tsx",
+          "type": "registry:component",
+          "target": "components/trading/depth-chart.tsx"
+        },
+        {
+          "path": "src/lib/canvas.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/canvas.ts"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "order-book",
+      "type": "registry:component",
+      "title": "Order book",
+      "description": "Ladder or two-column book with depth bars scaled across both sides, a spread row, and markers for your own resting orders.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/order-book.tsx",
+          "type": "registry:component",
+          "target": "components/trading/order-book.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "trade-tape",
+      "type": "registry:component",
+      "title": "Trade tape",
+      "description": "Time and sales, colored by aggressor side, with block-print highlighting.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/trade-tape.tsx",
+          "type": "registry:component",
+          "target": "components/trading/trade-tape.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "ticker-tape",
+      "type": "registry:component",
+      "title": "Ticker tape",
+      "description": "Seamless scrolling quote strip that pauses on hover and stops entirely under prefers-reduced-motion.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/ticker-tape.tsx",
+          "type": "registry:component",
+          "target": "components/trading/ticker-tape.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "watchlist",
+      "type": "registry:component",
+      "title": "Watchlist",
+      "description": "Symbol list with price, change and an inline sparkline, as a real listbox.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/watchlist.tsx",
+          "type": "registry:component",
+          "target": "components/trading/watchlist.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/sparkline.tsx",
+          "type": "registry:component",
+          "target": "components/trading/sparkline.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "symbol-header",
+      "type": "registry:component",
+      "title": "Symbol header",
+      "description": "Instrument banner: last price with tick flash, day change, bid/ask and range.",
+      "dependencies": [
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/symbol-header.tsx",
+          "type": "registry:component",
+          "target": "components/trading/symbol-header.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/stat.tsx",
+          "type": "registry:component",
+          "target": "components/trading/stat.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "order-ticket",
+      "type": "registry:component",
+      "title": "Order ticket",
+      "description": "Order entry with tick-snapped prices, a size slider, live cost estimate, an optional confirm dialog, and validation that blocks fat-fingers but only warns about legitimate risk.",
+      "dependencies": [
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-label",
+        "@radix-ui/react-select",
+        "@radix-ui/react-slider",
+        "@radix-ui/react-slot",
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/order-ticket.tsx",
+          "type": "registry:component",
+          "target": "components/trading/order-ticket.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/number-field.tsx",
+          "type": "registry:component",
+          "target": "components/trading/number-field.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/segmented-control.tsx",
+          "type": "registry:component",
+          "target": "components/trading/segmented-control.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/dialog.tsx",
+          "type": "registry:component",
+          "target": "components/ui/dialog.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/label.tsx",
+          "type": "registry:component",
+          "target": "components/ui/label.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/select.tsx",
+          "type": "registry:component",
+          "target": "components/ui/select.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/slider.tsx",
+          "type": "registry:component",
+          "target": "components/ui/slider.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/toggle-group.tsx",
+          "type": "registry:component",
+          "target": "components/ui/toggle-group.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "positions-table",
+      "type": "registry:component",
+      "title": "Positions table",
+      "description": "Open positions marked to market, with signed quantities so shorts need no special case.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/positions-table.tsx",
+          "type": "registry:component",
+          "target": "components/trading/positions-table.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/table.tsx",
+          "type": "registry:component",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "order-blotter",
+      "type": "registry:component",
+      "title": "Order blotter",
+      "description": "Today's orders and their state, with inline cancel.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/order-blotter.tsx",
+          "type": "registry:component",
+          "target": "components/trading/order-blotter.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/table.tsx",
+          "type": "registry:component",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "trading-terminal",
+      "type": "registry:block",
+      "title": "Trading terminal",
+      "description": "Every trading-ui component at once: chart, book, depth, tape, ticket, positions and blotter.",
+      "registryDependencies": [
+        "@trading-ui/trading-provider",
+        "@trading-ui/panel",
+        "@trading-ui/segmented-control",
+        "@trading-ui/number-field",
+        "@trading-ui/price",
+        "@trading-ui/delta",
+        "@trading-ui/stat",
+        "@trading-ui/sparkline",
+        "@trading-ui/candle-chart",
+        "@trading-ui/depth-chart",
+        "@trading-ui/order-book",
+        "@trading-ui/trade-tape",
+        "@trading-ui/ticker-tape",
+        "@trading-ui/watchlist",
+        "@trading-ui/symbol-header",
+        "@trading-ui/order-ticket",
+        "@trading-ui/positions-table",
+        "@trading-ui/order-blotter"
+      ],
+      "files": []
+    }
+  ]
+}

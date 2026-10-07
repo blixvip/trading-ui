@@ -1,0 +1,325 @@
+import type { BookLevel, Candle, OrderBookSnapshot, Quote, Trade } from '../types';
+
+/**
+ * A deterministic mock market. Seeded so screenshots, stories and tests are
+ * reproducible - every component in the library can be demoed without a feed,
+ * and nothing here pretends to be real market data.
+ */
+
+/** mulberry32: small, fast, good enough, and identical across runs. */
+export function createRandom(seed = 1) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** Box-Muller normal, so returns are not uniformly distributed. */
+function gaussian(rnd: () => number): number {
+  let u = 0;
+  while (u === 0) u = rnd();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rnd());
+}
+
+export interface GenerateCandlesOptions {
+  count?: number;
+  /** Starting price. */
+  start?: number;
+  /** Per-bar stdev as a fraction of price. */
+  volatility?: number;
+  /** Per-bar expected return, as a fraction. */
+  drift?: number;
+  intervalMs?: number;
+  /** Timestamp of the last bar; defaults to now, floored to the interval. */
+  endTime?: number;
+  baseVolume?: number;
+  seed?: number;
+}
+
+/** Geometric random walk shaped into OHLCV bars. */
+export function generateCandles(options: GenerateCandlesOptions = {}): Candle[] {
+  const {
+    count = 180,
+    start = 182.4,
+    volatility = 0.006,
+    drift = 0.0004,
+    intervalMs = 60_000,
+    endTime = Math.floor(Date.now() / intervalMs) * intervalMs,
+    baseVolume = 120_000,
+    seed = 7,
+  } = options;
+
+  const rnd = createRandom(seed);
+  const candles: Candle[] = [];
+  let price = start;
+
+  for (let i = 0; i < count; i++) {
+    const open = price;
+    const shock = gaussian(rnd) * volatility;
+    const close = Math.max(0.01, open * (1 + drift + shock));
+
+    // Wicks extend beyond the body by a fraction of the bar's own range, so
+    // quiet bars get small wicks and violent ones get long ones.
+    const body = Math.abs(close - open);
+    const wick = (body + open * volatility * 0.45) * (0.3 + rnd());
+    const high = Math.max(open, close) + wick * rnd();
+    const low = Math.min(open, close) - wick * rnd();
+
+    // Volume tracks the bar's absolute move - big candles trade heavy.
+    const intensity = 1 + (Math.abs(shock) / volatility) * 0.8;
+    const volume = Math.round(baseVolume * intensity * (0.55 + rnd() * 0.9));
+
+    candles.push({
+      time: endTime - (count - 1 - i) * intervalMs,
+      open,
+      high,
+      low,
+      close,
+      volume,
+    });
+    price = close;
+  }
+
+  return candles;
+}
+
+export interface GenerateBookOptions {
+  mid?: number;
+  levels?: number;
+  tickSize?: number;
+  /** Mean size at a level, before the decay with distance. */
+  baseSize?: number;
+  /** >1 tilts resting size toward the bid. */
+  imbalance?: number;
+  seed?: number;
+}
+
+/** A book whose depth thins out away from the touch, with size clusters. */
+export function generateOrderBook(options: GenerateBookOptions = {}): OrderBookSnapshot {
+  const {
+    mid = 182.4,
+    levels = 14,
+    tickSize = 0.01,
+    baseSize = 900,
+    imbalance = 1,
+    seed = 11,
+  } = options;
+
+  const rnd = createRandom(seed);
+  const spreadTicks = 1 + Math.floor(rnd() * 2);
+  const bestBid = mid - (spreadTicks * tickSize) / 2;
+  const bestAsk = mid + (spreadTicks * tickSize) / 2;
+
+  const build = (start: number, sign: number, skew: number): BookLevel[] => {
+    const out: BookLevel[] = [];
+    for (let i = 0; i < levels; i++) {
+      // Gaps widen deeper in the book, as they do in a real ladder.
+      const step = tickSize * (1 + Math.floor(i / 5));
+      const price = start + sign * i * step;
+      // Size grows away from the touch, plus occasional iceberg-looking blocks.
+      const growth = 1 + i * 0.22;
+      const cluster = rnd() > 0.86 ? 2.8 : 1;
+      const size = Math.round(baseSize * growth * cluster * skew * (0.5 + rnd()));
+      out.push({ price: Number(price.toFixed(8)), size: Math.max(1, size) });
+    }
+    return out;
+  };
+
+  return {
+    bids: build(bestBid, -1, imbalance),
+    asks: build(bestAsk, 1, 1 / imbalance),
+  };
+}
+
+export interface GenerateTradesOptions {
+  count?: number;
+  mid?: number;
+  tickSize?: number;
+  /** Time of the most recent print. */
+  endTime?: number;
+  /** Mean gap between prints, in ms. */
+  intervalMs?: number;
+  seed?: number;
+}
+
+/** Recent prints, newest first - the order TradeTape renders them in. */
+export function generateTrades(options: GenerateTradesOptions = {}): Trade[] {
+  const {
+    count = 40,
+    mid = 182.4,
+    tickSize = 0.01,
+    endTime = Date.now(),
+    intervalMs = 1400,
+    seed = 23,
+  } = options;
+
+  const rnd = createRandom(seed);
+  const trades: Trade[] = [];
+  let time = endTime;
+
+  for (let i = 0; i < count; i++) {
+    const side = rnd() > 0.5 ? 'buy' : 'sell';
+    const offset = Math.round(gaussian(rnd) * 2) * tickSize;
+    // Round lots dominate; the occasional block print is what traders watch for.
+    const size = rnd() > 0.93 ? 100 * (12 + Math.floor(rnd() * 40)) : 100 * (1 + Math.floor(rnd() * 8));
+    trades.push({
+      id: `t${i}-${time}`,
+      time,
+      price: Number((mid + offset).toFixed(8)),
+      size,
+      side,
+    });
+    time -= Math.max(60, intervalMs * (0.2 + rnd() * 1.8));
+  }
+
+  return trades;
+}
+
+const UNIVERSE: Array<[string, string, number]> = [
+  ['AAPL', 'Apple Inc.', 182.4],
+  ['MSFT', 'Microsoft Corp.', 418.7],
+  ['NVDA', 'NVIDIA Corp.', 121.35],
+  ['TSLA', 'Tesla Inc.', 243.9],
+  ['AMZN', 'Amazon.com Inc.', 186.2],
+  ['META', 'Meta Platforms', 512.6],
+  ['GOOGL', 'Alphabet Inc.', 174.85],
+  ['JPM', 'JPMorgan Chase', 205.1],
+  ['SPY', 'S&P 500 ETF', 548.3],
+  ['BTC-USD', 'Bitcoin / USD', 63250],
+];
+
+/** A watchlist's worth of quotes, each with a short intraday history. */
+export function generateQuotes(seed = 5, count = UNIVERSE.length): Quote[] {
+  const rnd = createRandom(seed);
+  return UNIVERSE.slice(0, count).map(([symbol, name, base]) => {
+    const prevClose = base;
+    const history: number[] = [];
+    let price = base;
+    for (let i = 0; i < 40; i++) {
+      price = price * (1 + gaussian(rnd) * 0.004);
+      history.push(price);
+    }
+    const last = history[history.length - 1];
+    return {
+      symbol,
+      name,
+      last,
+      prevClose,
+      bid: last - base * 0.0001,
+      ask: last + base * 0.0001,
+      dayHigh: Math.max(...history, base),
+      dayLow: Math.min(...history, base),
+      volume: Math.round((2 + rnd() * 48) * 1e6),
+      history,
+    };
+  });
+}
+
+/**
+ * Advances a snapshot by one tick: a new print, a nudged book, and either an
+ * updated or freshly opened last candle. Pure, so a host can drive it from an
+ * interval, a rAF loop, or a test clock.
+ */
+export interface MarketState {
+  candles: Candle[];
+  book: OrderBookSnapshot;
+  trades: Trade[];
+  last: number;
+  seq: number;
+}
+
+export interface MarketConfig {
+  tickSize?: number;
+  intervalMs?: number;
+  volatility?: number;
+  maxCandles?: number;
+  maxTrades?: number;
+}
+
+export function createMarket(
+  symbol = 'AAPL',
+  config: MarketConfig = {},
+  seed = 7,
+): MarketState {
+  const { tickSize = 0.01, intervalMs = 60_000, volatility = 0.006 } = config;
+  const base = UNIVERSE.find((u) => u[0] === symbol)?.[2] ?? 182.4;
+  const candles = generateCandles({ start: base, intervalMs, volatility, seed });
+  const last = candles[candles.length - 1].close;
+  return {
+    candles,
+    book: generateOrderBook({ mid: last, tickSize, seed: seed + 4 }),
+    trades: generateTrades({ mid: last, tickSize, seed: seed + 9 }),
+    last,
+    seq: 0,
+  };
+}
+
+export function stepMarket(
+  state: MarketState,
+  config: MarketConfig = {},
+  now = Date.now(),
+): MarketState {
+  const {
+    tickSize = 0.01,
+    intervalMs = 60_000,
+    volatility = 0.006,
+    maxCandles = 240,
+    maxTrades = 60,
+  } = config;
+
+  const rnd = createRandom(state.seq * 2654435761 + 1);
+  const drift = gaussian(rnd) * volatility * 0.25;
+  const last = Math.max(tickSize, Number((state.last * (1 + drift)).toFixed(8)));
+
+  const candles = state.candles.slice();
+  const tail = candles[candles.length - 1];
+  const bucket = Math.floor(now / intervalMs) * intervalMs;
+
+  if (tail && bucket > tail.time) {
+    candles.push({
+      time: bucket,
+      open: tail.close,
+      high: Math.max(tail.close, last),
+      low: Math.min(tail.close, last),
+      close: last,
+      volume: Math.round(2000 + rnd() * 8000),
+    });
+    if (candles.length > maxCandles) candles.shift();
+  } else if (tail) {
+    candles[candles.length - 1] = {
+      ...tail,
+      high: Math.max(tail.high, last),
+      low: Math.min(tail.low, last),
+      close: last,
+      volume: tail.volume + Math.round(300 + rnd() * 1800),
+    };
+  }
+
+  const size = rnd() > 0.93 ? 100 * (12 + Math.floor(rnd() * 40)) : 100 * (1 + Math.floor(rnd() * 8));
+  const trades = [
+    {
+      id: `s${state.seq}`,
+      time: now,
+      price: last,
+      size,
+      side: drift >= 0 ? ('buy' as const) : ('sell' as const),
+    },
+    ...state.trades,
+  ].slice(0, maxTrades);
+
+  return {
+    candles,
+    book: generateOrderBook({
+      mid: last,
+      tickSize,
+      seed: 11 + state.seq,
+      imbalance: 0.8 + rnd() * 0.5,
+    }),
+    trades,
+    last,
+    seq: state.seq + 1,
+  };
+}
