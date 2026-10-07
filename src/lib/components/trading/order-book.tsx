@@ -92,7 +92,7 @@ export function OrderBook({
         key={`${side}-${row.price}`}
         type="button"
         className={cn(
-          'hover:bg-accent focus-visible:ring-ring relative grid w-full cursor-pointer gap-2 px-2.5 py-[3px] text-right outline-none focus-visible:ring-1 focus-visible:-ring-offset-1',
+          'hover:bg-accent focus-visible:ring-ring relative grid w-full cursor-pointer gap-2 px-2.5 py-[3px] text-right outline-none focus-visible:ring-1',
           !onSelectLevel && 'cursor-default',
         )}
         style={{ gridTemplateColumns: gridCols }}

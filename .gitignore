@@ -5,3 +5,4 @@ dist-demo/
 .DS_Store
 .vite/
 *.tsbuildinfo
+*.tgz

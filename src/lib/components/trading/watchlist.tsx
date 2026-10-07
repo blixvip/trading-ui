@@ -52,7 +52,7 @@ export function Watchlist({
             role="option"
             aria-selected={isSelected}
             className={cn(
-              'hover:bg-accent focus-visible:ring-ring grid w-full cursor-pointer grid-cols-[minmax(52px,1fr)_58px_minmax(60px,auto)_minmax(66px,auto)] items-center gap-2.5 border-b px-2.5 py-1.5 text-left outline-none focus-visible:ring-2 focus-visible:-ring-offset-2',
+              'hover:bg-accent focus-visible:ring-ring grid w-full cursor-pointer grid-cols-[minmax(52px,1fr)_58px_minmax(60px,auto)_minmax(66px,auto)] items-center gap-2.5 border-b px-2.5 py-1.5 text-left outline-none focus-visible:ring-2',
               isSelected && 'bg-primary/10 shadow-[inset_2px_0_0_var(--primary)]',
             )}
             onClick={() => onSelect?.(quote)}

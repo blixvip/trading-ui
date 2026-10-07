@@ -1,3 +1,4 @@
+import { decimalsOf, roundToTick } from '../format';
 import type { BookLevel, Candle, OrderBookSnapshot, Quote, Trade } from '../types';
 
 /**
@@ -109,28 +110,39 @@ export function generateOrderBook(options: GenerateBookOptions = {}): OrderBookS
   } = options;
 
   const rnd = createRandom(seed);
-  const spreadTicks = 1 + Math.floor(rnd() * 2);
-  const bestBid = mid - (spreadTicks * tickSize) / 2;
-  const bestAsk = mid + (spreadTicks * tickSize) / 2;
+  const decimals = decimalsOf(tickSize);
 
-  const build = (start: number, sign: number, skew: number): BookLevel[] => {
+  /**
+   * Levels are walked in whole ticks and only converted to a price at the
+   * end. The mid comes off a random walk and is not itself on the grid, so
+   * deriving prices from it directly produced levels like 180.69862865 -
+   * which *display* as 180.70 but are not equal to it. Anything that keys off
+   * a price (marking your own resting orders, prefilling a ticket from a
+   * clicked level) then silently misses.
+   */
+  const midTicks = Math.round(mid / tickSize);
+  const spreadTicks = 1 + Math.floor(rnd() * 2);
+  const bidTicks = midTicks - Math.ceil(spreadTicks / 2);
+  const askTicks = bidTicks + spreadTicks;
+
+  const build = (startTicks: number, sign: number, skew: number): BookLevel[] => {
     const out: BookLevel[] = [];
+    let ticks = startTicks;
     for (let i = 0; i < levels; i++) {
       // Gaps widen deeper in the book, as they do in a real ladder.
-      const step = tickSize * (1 + Math.floor(i / 5));
-      const price = start + sign * i * step;
+      if (i > 0) ticks += sign * (1 + Math.floor(i / 5));
       // Size grows away from the touch, plus occasional iceberg-looking blocks.
       const growth = 1 + i * 0.22;
       const cluster = rnd() > 0.86 ? 2.8 : 1;
       const size = Math.round(baseSize * growth * cluster * skew * (0.5 + rnd()));
-      out.push({ price: Number(price.toFixed(8)), size: Math.max(1, size) });
+      out.push({ price: Number((ticks * tickSize).toFixed(decimals)), size: Math.max(1, size) });
     }
     return out;
   };
 
   return {
-    bids: build(bestBid, -1, imbalance),
-    asks: build(bestAsk, 1, 1 / imbalance),
+    bids: build(bidTicks, -1, imbalance),
+    asks: build(askTicks, 1, 1 / imbalance),
   };
 }
 
@@ -157,18 +169,20 @@ export function generateTrades(options: GenerateTradesOptions = {}): Trade[] {
   } = options;
 
   const rnd = createRandom(seed);
+  const decimals = decimalsOf(tickSize);
+  const midTicks = Math.round(mid / tickSize);
   const trades: Trade[] = [];
   let time = endTime;
 
   for (let i = 0; i < count; i++) {
     const side = rnd() > 0.5 ? 'buy' : 'sell';
-    const offset = Math.round(gaussian(rnd) * 2) * tickSize;
+    const offsetTicks = Math.round(gaussian(rnd) * 2);
     // Round lots dominate; the occasional block print is what traders watch for.
     const size = rnd() > 0.93 ? 100 * (12 + Math.floor(rnd() * 40)) : 100 * (1 + Math.floor(rnd() * 8));
     trades.push({
       id: `t${i}-${time}`,
       time,
-      price: Number((mid + offset).toFixed(8)),
+      price: Number(((midTicks + offsetTicks) * tickSize).toFixed(decimals)),
       size,
       side,
     });
@@ -247,7 +261,11 @@ export function createMarket(
   const { tickSize = 0.01, intervalMs = 60_000, volatility = 0.006 } = config;
   const base = UNIVERSE.find((u) => u[0] === symbol)?.[2] ?? 182.4;
   const candles = generateCandles({ start: base, intervalMs, volatility, seed });
-  const last = candles[candles.length - 1].close;
+  // The walk produces arbitrary floats; the last *traded* price has to be a
+  // price someone could actually have traded at, so it snaps to the grid like
+  // every other price the feed emits.
+  const last = roundToTick(candles[candles.length - 1].close, tickSize);
+  candles[candles.length - 1] = { ...candles[candles.length - 1], close: last };
   return {
     candles,
     book: generateOrderBook({ mid: last, tickSize, seed: seed + 4 }),
@@ -272,7 +290,9 @@ export function stepMarket(
 
   const rnd = createRandom(state.seq * 2654435761 + 1);
   const drift = gaussian(rnd) * volatility * 0.25;
-  const last = Math.max(tickSize, Number((state.last * (1 + drift)).toFixed(8)));
+  // Snap to the tick grid: an off-grid last price is not a price anyone could
+  // trade at, and it would leak into every print and book level derived from it.
+  const last = Math.max(tickSize, roundToTick(state.last * (1 + drift), tickSize));
 
   const candles = state.candles.slice();
   const tail = candles[candles.length - 1];

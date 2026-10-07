@@ -64,7 +64,7 @@ export function TickerTape({
               // accessibility tree and out of the tab order.
               aria-hidden={duplicate}
               tabIndex={duplicate ? -1 : 0}
-              className="hover:bg-accent focus-visible:ring-ring flex cursor-pointer items-baseline gap-2 border-r px-4 py-2 whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:-ring-offset-2"
+              className="hover:bg-accent focus-visible:ring-ring flex cursor-pointer items-baseline gap-2 border-r px-4 py-2 whitespace-nowrap outline-none focus-visible:ring-2"
               onClick={() => onSelect?.(quote)}
             >
               <span className="text-xs font-bold tracking-wide">{quote.symbol}</span>

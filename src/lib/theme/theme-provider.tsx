@@ -99,7 +99,7 @@ export function TradingProvider({
           data-tu-theme={theme}
           data-tu-palette={palette}
           className={cn(
-            'bg-background text-foreground [font-feature-settings:"tnum"_0]',
+            'bg-background text-foreground',
             theme === 'dark' && 'dark',
             className,
           )}

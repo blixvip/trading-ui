@@ -91,7 +91,29 @@ check('trades newest first', market.trades.every((t, i, a) => i === 0 || t.time 
 check('deterministic for a seed', createMarket('AAPL', { tickSize: 0.01 }, 7).last === market.last);
 check('different seeds diverge', createMarket('AAPL', { tickSize: 0.01 }, 8).last !== market.last);
 
+// Regression: levels used to be derived from an off-grid mid, producing prices
+// like 180.69862865 that *display* as 180.70 but never compare equal to it, so
+// OrderBook's `myOrders` markers and click-to-prefill silently missed.
+const onGrid = (p: number) => Math.abs(p * 100 - Math.round(p * 100)) < 1e-9;
+check('bid levels sit on the tick grid', market.book.bids.every((l) => onGrid(l.price)), market.book.bids[0].price);
+check('ask levels sit on the tick grid', market.book.asks.every((l) => onGrid(l.price)), market.book.asks[0].price);
+check('prints sit on the tick grid', market.trades.every((t) => onGrid(t.price)), market.trades[0].price);
+check('last price sits on the tick grid', onGrid(market.last), market.last);
+check(
+  'a tick-rounded touch price keys into the book',
+  ({ [roundToTick(market.book.bids[0].price, 0.01)]: 100 } as Record<number, number>)[
+    market.book.bids[0].price
+  ] === 100,
+  { seeded: roundToTick(market.book.bids[0].price, 0.01), actual: market.book.bids[0].price },
+);
+check(
+  'no two visible levels share a displayed price',
+  new Set(market.book.bids.slice(0, 11).map((l) => formatPrice(l.price, 2))).size === 11,
+);
+
 const stepped = stepMarket(market, { tickSize: 0.01 });
+check('stepped last stays on the grid', onGrid(stepped.last), stepped.last);
+check('stepped book stays on the grid', stepped.book.bids.every((l) => onGrid(l.price)));
 check('step advances seq', stepped.seq === 1, stepped.seq);
 check('step keeps candle count sane', stepped.candles.length >= market.candles.length);
 check('step prepends a print', stepped.trades[0].id === 's0', stepped.trades[0].id);
@@ -201,7 +223,7 @@ const tree = (
       <CandleChart candles={market.candles} kind="area" height={200} />
     </Panel>
     <Panel title="Book">
-      <OrderBook book={market.book} depth={8} myOrders={{ [market.book.bids[0].price]: 100 }} />
+      <OrderBook book={market.book} depth={8} myOrders={{ [roundToTick(market.book.bids[0].price, 0.01)]: 100 }} />
       <OrderBook book={market.book} depth={8} layout="columns" />
       <DepthChart book={market.book} />
       <ScrollArea>
@@ -260,7 +282,13 @@ check('canvas present for each chart', (html.match(/<canvas/g) ?? []).length ===
 check('ticker duplicates the track', (html.match(/data-slot="badge"|tracking-wide/g) ?? []).length > 0);
 check('radix slots rendered', html.includes('data-slot="toggle-group"'));
 check('radix tabs rendered', html.includes('role="tablist"'));
-check('book marks my resting order', html.includes('Your resting order'));
+// Regression: this assertion passed while the feature was broken in the app,
+// because the test handed OrderBook a key taken straight from the book. The
+// real path goes through roundToTick, so key off that instead.
+check(
+  'book marks my resting order (keyed through roundToTick)',
+  html.includes('Your resting order'),
+);
 check('short badge rendered', html.includes('SHORT'));
 check('blotter status rendered', html.includes('WORKING'));
 check('ticket names the side and size', html.includes('Buy 0 AAPL'));
