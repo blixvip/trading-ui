@@ -17,6 +17,10 @@ is a Radix primitive underneath, and every color is a shadcn token.
 npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/order-book.json
 ```
 
+**[Live demo →](https://blixvip.github.io/trading-ui/)** — a running terminal on
+a seeded feed, both themes, both palettes. Every panel on it is an exported
+component, not a screenshot.
+
 ---
 
 ## What's in it
