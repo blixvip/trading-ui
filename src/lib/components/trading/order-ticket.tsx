@@ -1,3 +1,5 @@
+'use client';
+
 import { AlertTriangleIcon } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { formatMoney, formatPrice, formatQuantity, roundToTick } from '../../format';

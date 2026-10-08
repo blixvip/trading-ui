@@ -1,7 +1,7 @@
 {
   "$schema": "https://ui.shadcn.com/schema/registry.json",
   "name": "trading-ui",
-  "homepage": "https://github.com/OWNER/trading-ui",
+  "homepage": "https://github.com/blixvip/trading-ui",
   "items": [
     {
       "name": "trading-theme",
@@ -110,6 +110,24 @@
           "path": "src/lib/types.ts",
           "type": "registry:lib",
           "target": "lib/trading/types.ts"
+        }
+      ]
+    },
+    {
+      "name": "panel-boundary",
+      "type": "registry:component",
+      "title": "PanelBoundary",
+      "description": "React error boundary that contains a render fault to one widget instead of unmounting the terminal, with resetKeys recovery and an onError hook for your reporter.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/error-boundary.tsx",
+          "type": "registry:component",
+          "target": "components/trading/error-boundary.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
         }
       ]
     },
@@ -1695,6 +1713,7 @@
       "description": "Every trading-ui component at once: chart, book, depth, tape, ticket, positions and blotter.",
       "registryDependencies": [
         "@trading-ui/trading-provider",
+        "@trading-ui/panel-boundary",
         "@trading-ui/panel",
         "@trading-ui/segmented-control",
         "@trading-ui/number-field",

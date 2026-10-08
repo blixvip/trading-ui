@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useState } from 'react';
 import { createMarket, stepMarket, type MarketConfig, type MarketState } from './mock-market';
 

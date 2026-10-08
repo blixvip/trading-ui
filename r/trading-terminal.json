@@ -6,6 +6,7 @@
   "description": "Every trading-ui component at once: chart, book, depth, tape, ticket, positions and blotter.",
   "registryDependencies": [
     "@trading-ui/trading-provider",
+    "@trading-ui/panel-boundary",
     "@trading-ui/panel",
     "@trading-ui/segmented-control",
     "@trading-ui/number-field",

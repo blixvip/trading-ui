@@ -1,8 +1,10 @@
+'use client';
+
 import { useMemo } from 'react';
 import { formatQuantity, formatPrice } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument, OrderBookSnapshot, Side } from '../../types';
-import { cn } from '../../utils';
+import { cn, toBook } from '../../utils';
 
 export interface DomOrder {
   price: number;
@@ -62,8 +64,9 @@ export function DomLadder({
   const sizeDigits = inst.sizePrecision ?? 0;
 
   const { rungs, peakSize, peakVolume } = useMemo(() => {
-    const bestBid = book.bids[0]?.price;
-    const bestAsk = book.asks[0]?.price;
+    const safe = toBook(book);
+    const bestBid = safe.bids[0]?.price;
+    const bestAsk = safe.asks[0]?.price;
     if (bestBid === undefined || bestAsk === undefined) {
       return { rungs: [] as Rung[], peakSize: 1, peakVolume: 1 };
     }
@@ -74,8 +77,8 @@ export function DomLadder({
     // actually is not.
     const tick = inst.tickSize;
     const topTicks = Math.round(bestAsk / tick) + depth - 1;
-    const bidBySize = new Map(book.bids.map((l) => [Math.round(l.price / tick), l.size]));
-    const askBySize = new Map(book.asks.map((l) => [Math.round(l.price / tick), l.size]));
+    const bidBySize = new Map(safe.bids.map((l) => [Math.round(l.price / tick), l.size]));
+    const askBySize = new Map(safe.asks.map((l) => [Math.round(l.price / tick), l.size]));
     const myBids = new Map<number, number>();
     const myAsks = new Map<number, number>();
     for (const o of orders) {

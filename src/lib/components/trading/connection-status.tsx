@@ -1,3 +1,5 @@
+'use client';
+
 import { cn } from '../../utils';
 import { Badge } from '../ui/badge';
 

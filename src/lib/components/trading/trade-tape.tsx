@@ -1,8 +1,10 @@
+'use client';
+
 import { useEffect, useRef } from 'react';
 import { formatPrice, formatQuantity, formatTime } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument, Trade } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 import { EmptyState } from './empty-state';
 import { EmptyTapeArt } from './illustrations';
 import { TradeTapeSkeleton } from './skeletons';
@@ -43,7 +45,7 @@ export function TradeTape({
 }: TradeTapeProps) {
   const inst = useInstrument(instrument);
   const sizeDigits = inst.sizePrecision ?? 0;
-  const rows = trades.slice(0, maxRows);
+  const rows = toArray(trades).slice(0, maxRows);
 
   // Only genuinely new prints get the enter animation; without this the whole
   // tape re-animates on every parent render.

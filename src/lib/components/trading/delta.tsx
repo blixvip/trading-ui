@@ -1,3 +1,5 @@
+'use client';
+
 import { TrendingDownIcon, TrendingUpIcon } from 'lucide-react';
 import { directionOf, formatPercent, formatSigned } from '../../format';
 import { cn } from '../../utils';

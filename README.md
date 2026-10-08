@@ -14,7 +14,7 @@ the parts those libraries already got right — every interactive component here
 is a Radix primitive underneath, and every color is a shadcn token.
 
 ```
-npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/order-book.json
+npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/order-book.json
 ```
 
 ---
@@ -85,6 +85,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/
 | `NumberField` `SegmentedControl` | Entry and switching, tuned for order flow |
 | `EmptyState` + `*Art` | Authored SVG empty states |
 | `Skeleton` + `*Skeleton` | Loading states shaped like the thing they replace |
+| `PanelBoundary` | Contains a render fault to one widget, with `resetKeys` recovery |
 
 Plus `useMockMarket` — a seeded, deterministic market feed so every component
 is demoable and testable without a data provider.
@@ -118,11 +119,11 @@ If you already run shadcn/ui, pull components in as source and edit them like
 any other file in your repo. Each item brings only what it needs:
 
 ```bash
-npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/candle-chart.json
-npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/order-ticket.json
+npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/candle-chart.json
+npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/order-ticket.json
 
 # or the whole terminal at once
-npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/trading-terminal.json
+npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/trading-terminal.json
 ```
 
 Then add the direction tokens to your stylesheet — see
@@ -195,12 +196,30 @@ data lands.
 market is rejected (it would trigger instantly). Going short only warns — it's
 legitimate, it just shouldn't be a surprise.
 
+**A bad payload degrades one panel, never the screen.** A live feed is not a
+type system: sockets drop fields, REST returns `null` for "no rows yet", and
+panels mount before their first payload lands. Every data-taking component
+normalizes its input and falls through to its empty state rather than throwing,
+and `PanelBoundary` catches whatever is left:
+
+```tsx
+<PanelBoundary label="Order book" resetKeys={[symbol]} onError={report}>
+  <OrderBook book={book} />
+</PanelBoundary>
+```
+
+The failure mode this exists to prevent is the one that matters: an uncaught
+error anywhere in a React tree unmounts *all* of it, so a malformed depth
+message would take the blotter, the positions and the ticket down with it — at
+exactly the moment a trader needs to see their exposure and get out.
+
 ## Development
 
 ```bash
 npm install
 npm run dev        # product site at http://localhost:4310
-npm test           # 102 assertions: formatting, market invariants, order rules, SSR render
+npm test           # 128 assertions: formatting, market invariants, order rules,
+                   # SSR render, feed resilience, boundary reset logic
 npm run typecheck
 npm run build      # typecheck + test + library + registry
 ```

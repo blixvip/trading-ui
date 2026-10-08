@@ -1,3 +1,5 @@
+'use client';
+
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { useEffect, useId, useState } from 'react';
 import { decimalsOf } from '../../format';

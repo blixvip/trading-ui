@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo } from 'react';
 import { formatMoney, formatPercent, formatPrice, roundToTick } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';

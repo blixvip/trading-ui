@@ -41,7 +41,7 @@ import {
 } from '../lib';
 import { CopyCommand } from './copy-command';
 
-const REGISTRY = 'https://raw.githubusercontent.com/OWNER/trading-ui/main/r';
+const REGISTRY = 'https://raw.githubusercontent.com/blixvip/trading-ui/main/r';
 
 export interface CatalogueEntry {
   id: string;

@@ -1,3 +1,5 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import { formatCompact, formatPrice } from '../../format';
 import { usePriceFlash } from '../../hooks';

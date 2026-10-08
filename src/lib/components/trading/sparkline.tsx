@@ -1,5 +1,7 @@
+'use client';
+
 import { useId, useMemo } from 'react';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 
 export interface SparklineProps {
   data: number[];
@@ -43,7 +45,7 @@ export function Sparkline({
   const gradientId = useId();
 
   const geometry = useMemo(() => {
-    const points = data.filter(Number.isFinite);
+    const points = toArray(data).filter(Number.isFinite);
     if (points.length < 2) return null;
 
     const base = baseline ?? points[0];

@@ -1,10 +1,12 @@
+'use client';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { crisp, dashedLine, makeScale, niceTicks, prepareCanvas, readTokens } from '../../canvas';
 import { formatAxisTime, formatMoney, formatPercent, formatTime } from '../../format';
 import { useElementSize } from '../../hooks';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 
 export interface EquityPoint {
   time: number;
@@ -73,9 +75,11 @@ export function PnlChart({
 
   const width = size.width;
 
+  const series = toArray(points);
+
   const model = useMemo(() => {
-    if (points.length < 2) return null;
-    const equity = points.map((p) => p.equity);
+    if (series.length < 2) return null;
+    const equity = series.map((p) => p.equity);
     const base = startingEquity ?? equity[0];
     const peaks = runningPeak(equity);
     const maxDrawdown = Math.min(...equity.map((v, i) => (v - peaks[i]) / peaks[i]));
@@ -87,7 +91,7 @@ export function PnlChart({
       last: equity[equity.length - 1],
       maxDrawdown,
     };
-  }, [points, startingEquity]);
+  }, [series, startingEquity]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -105,7 +109,7 @@ export function PnlChart({
 
     const pad = (model.hi - model.lo) * 0.08 || Math.abs(model.hi) * 0.01 || 1;
     const y = makeScale(model.lo - pad, model.hi + pad, bottom, top);
-    const x = makeScale(0, points.length - 1, left, right);
+    const x = makeScale(0, series.length - 1, left, right);
 
     ctx.font = '10px ui-monospace, monospace';
     ctx.textBaseline = 'middle';
@@ -124,11 +128,11 @@ export function PnlChart({
       ctx.fillText(formatMoney(tick, inst.currency, 0), right + 6, ty);
     }
 
-    const labelEvery = Math.max(1, Math.ceil(points.length / Math.max(1, Math.floor((right - left) / 70))));
+    const labelEvery = Math.max(1, Math.ceil(series.length / Math.max(1, Math.floor((right - left) / 70))));
     ctx.textAlign = 'center';
     ctx.fillStyle = c['--chart-axis'];
-    for (let i = points.length - 1; i >= 0; i -= labelEvery) {
-      ctx.fillText(formatAxisTime(points[i].time), x(i), bottom + TIME_AXIS_HEIGHT / 2);
+    for (let i = series.length - 1; i >= 0; i -= labelEvery) {
+      ctx.fillText(formatAxisTime(series[i].time), x(i), bottom + TIME_AXIS_HEIGHT / 2);
     }
 
     const up = model.last >= model.base;
@@ -138,13 +142,13 @@ export function PnlChart({
       // Between the running peak and the curve: the region is the loss from
       // the high-water mark, which is why it is always drawn in the down tone.
       ctx.beginPath();
-      points.forEach((_, i) => {
+      series.forEach((_, i) => {
         const px = x(i);
         const py = y(model.peaks[i]);
         i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
       });
-      for (let i = points.length - 1; i >= 0; i--) {
-        ctx.lineTo(x(i), y(points[i].equity));
+      for (let i = series.length - 1; i >= 0; i--) {
+        ctx.lineTo(x(i), y(series[i].equity));
       }
       ctx.closePath();
       ctx.fillStyle = c['--down-line'];
@@ -164,12 +168,12 @@ export function PnlChart({
     fill.addColorStop(1, 'transparent');
     ctx.save();
     ctx.beginPath();
-    points.forEach((p, i) => {
+    series.forEach((p, i) => {
       const px = x(i);
       const py = y(p.equity);
       i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     });
-    ctx.lineTo(x(points.length - 1), bottom);
+    ctx.lineTo(x(series.length - 1), bottom);
     ctx.lineTo(x(0), bottom);
     ctx.closePath();
     ctx.globalAlpha = 0.35;
@@ -178,7 +182,7 @@ export function PnlChart({
     ctx.restore();
 
     ctx.beginPath();
-    points.forEach((p, i) => {
+    series.forEach((p, i) => {
       const px = x(i);
       const py = y(p.equity);
       i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
@@ -194,16 +198,16 @@ export function PnlChart({
       dashedLine(ctx, crisp(px), top, crisp(px), bottom, [3, 3]);
       ctx.fillStyle = stroke;
       ctx.beginPath();
-      ctx.arc(px, y(points[hover.index].equity), 3, 0, Math.PI * 2);
+      ctx.arc(px, y(series[hover.index].equity), 3, 0, Math.PI * 2);
       ctx.fill();
     }
-  }, [model, points, width, height, showDrawdown, showBaseline, crosshair, hover, inst.currency, wrapRef]);
+  }, [model, series, width, height, showDrawdown, showBaseline, crosshair, hover, inst.currency, wrapRef]);
 
   if (!model) {
     return <div className="text-muted-foreground p-5 text-center text-xs">Not enough history</div>;
   }
 
-  const hovered = hover ? points[hover.index] : undefined;
+  const hovered = hover ? series[hover.index] : undefined;
   const hoveredPnl = hovered ? hovered.equity - model.base : 0;
 
   return (
@@ -217,8 +221,8 @@ export function PnlChart({
         const px = e.clientX - rect.left;
         const inner = Math.max(1, rect.width - AXIS_WIDTH - PAD);
         const index = Math.min(
-          points.length - 1,
-          Math.max(0, Math.round(((px - PAD) / inner) * (points.length - 1))),
+          series.length - 1,
+          Math.max(0, Math.round(((px - PAD) / inner) * (series.length - 1))),
         );
         setHover({ index, x: px });
       }}

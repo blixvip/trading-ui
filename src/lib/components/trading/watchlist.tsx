@@ -1,7 +1,9 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import { formatPrice } from '../../format';
 import type { Quote } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 import { Delta } from './delta';
 import { EmptyState } from './empty-state';
 import { EmptyWatchlistArt } from './illustrations';
@@ -42,9 +44,11 @@ export function Watchlist({
   emptyAction,
   className,
 }: WatchlistProps) {
+  const rows = toArray(quotes);
+
   if (loading) return <WatchlistSkeleton className={className} />;
 
-  if (quotes.length === 0) {
+  if (rows.length === 0) {
     return (
       <EmptyState
         className={className}
@@ -62,7 +66,7 @@ export function Watchlist({
       aria-label="Watchlist"
       className={cn('flex flex-col', className)}
     >
-      {quotes.map((quote) => {
+      {rows.map((quote) => {
         const change = quote.last - quote.prevClose;
         const isSelected = quote.symbol === selected;
         return (

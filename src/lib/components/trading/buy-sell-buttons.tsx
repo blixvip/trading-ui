@@ -1,3 +1,5 @@
+'use client';
+
 import { useInstrument } from '../../theme/theme-provider';
 import { formatPrice } from '../../format';
 import { usePriceFlash } from '../../hooks';

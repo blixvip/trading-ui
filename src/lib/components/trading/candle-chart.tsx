@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   crisp,
@@ -17,7 +19,7 @@ import {
 import { useElementSize } from '../../hooks';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Candle, Instrument } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 import { EmptyState } from './empty-state';
 import { EmptyChartArt } from './illustrations';
 import { CandleChartSkeleton } from './skeletons';
@@ -124,20 +126,22 @@ export function CandleChart({
   const width = size.width;
   const chartHeight = height ?? size.height;
 
+  const bars = toArray(candles);
+
   const averages = useMemo(() => {
     if (!movingAverages?.length) return [];
-    const closes = candles.map((c) => c.close);
+    const closes = bars.map((c) => c.close);
     return movingAverages.map((ma, i) => ({
       ...ma,
       color: ma.color ?? MA_FALLBACK[i % MA_FALLBACK.length],
       values: sma(closes, ma.period),
     }));
-  }, [candles, movingAverages]);
+  }, [bars, movingAverages]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const wrap = wrapRef.current;
-    if (!canvas || !wrap || width < 2 || chartHeight < 2 || candles.length === 0) return;
+    if (!canvas || !wrap || width < 2 || chartHeight < 2 || bars.length === 0) return;
 
     const ctx = prepareCanvas(canvas, width, chartHeight);
     if (!ctx) return;
@@ -153,7 +157,7 @@ export function CandleChart({
 
     let lo = Infinity;
     let hi = -Infinity;
-    for (const bar of candles) {
+    for (const bar of bars) {
       if (bar.low < lo) lo = bar.low;
       if (bar.high > hi) hi = bar.high;
     }
@@ -168,7 +172,7 @@ export function CandleChart({
     const pad = (hi - lo) * 0.04 || hi * 0.004 || 1;
     const y = makeScale(lo - pad, hi + pad, priceBottom, plotTop);
 
-    const slot = plotWidth / candles.length;
+    const slot = plotWidth / bars.length;
     const bodyWidth = Math.max(1, Math.min(14, slot * 0.68));
     const xOf = (i: number) => plotLeft + slot * (i + 0.5);
 
@@ -176,7 +180,7 @@ export function CandleChart({
     ctx.textBaseline = 'middle';
 
     // --- grid + price axis ---
-    const lastBar = candles[candles.length - 1];
+    const lastBar = bars[bars.length - 1];
     const lastY = y(lastBar.close);
     const ticks = niceTicks(
       lo - pad,
@@ -203,12 +207,12 @@ export function CandleChart({
     }
 
     // --- time axis ---
-    const labelEvery = Math.max(1, Math.ceil(candles.length / Math.max(1, Math.floor(plotWidth / 64))));
+    const labelEvery = Math.max(1, Math.ceil(bars.length / Math.max(1, Math.floor(plotWidth / 64))));
     ctx.textAlign = 'center';
     ctx.fillStyle = c['--chart-axis'];
-    for (let i = candles.length - 1; i >= 0; i -= labelEvery) {
-      const bar = candles[i];
-      const prev = candles[i - labelEvery];
+    for (let i = bars.length - 1; i >= 0; i -= labelEvery) {
+      const bar = bars[i];
+      const prev = bars[i - labelEvery];
       const newDay = prev ? new Date(prev.time).getDate() !== new Date(bar.time).getDate() : false;
       ctx.fillText(formatAxisTime(bar.time, newDay), xOf(i), plotBottom + TIME_AXIS_HEIGHT / 2);
     }
@@ -221,9 +225,9 @@ export function CandleChart({
     // --- volume ---
     if (volumeHeight > 0) {
       let maxVolume = 0;
-      for (const bar of candles) if (bar.volume > maxVolume) maxVolume = bar.volume;
-      for (let i = 0; i < candles.length; i++) {
-        const bar = candles[i];
+      for (const bar of bars) if (bar.volume > maxVolume) maxVolume = bar.volume;
+      for (let i = 0; i < bars.length; i++) {
+        const bar = bars[i];
         const h = maxVolume ? (bar.volume / maxVolume) * volumeHeight : 0;
         ctx.fillStyle = bar.close >= bar.open ? c['--up-line'] : c['--down-line'];
         ctx.globalAlpha = 0.5;
@@ -235,17 +239,17 @@ export function CandleChart({
     // --- price series ---
     const tracePath = () => {
       ctx.beginPath();
-      for (let i = 0; i < candles.length; i++) {
+      for (let i = 0; i < bars.length; i++) {
         const px = xOf(i);
-        const py = y(candles[i].close);
+        const py = y(bars[i].close);
         if (i === 0) ctx.moveTo(px, py);
         else ctx.lineTo(px, py);
       }
     };
 
     if (kind === 'candle' || kind === 'hollow') {
-      for (let i = 0; i < candles.length; i++) {
-        const bar = candles[i];
+      for (let i = 0; i < bars.length; i++) {
+        const bar = bars[i];
         const up = bar.close >= bar.open;
         const color = up ? c['--up'] : c['--down'];
         const cx = xOf(i);
@@ -276,7 +280,7 @@ export function CandleChart({
         }
       }
     } else {
-      const up = lastBar.close >= candles[0].open;
+      const up = lastBar.close >= bars[0].open;
       const line = up ? c['--up'] : c['--down'];
 
       if (kind === 'area') {
@@ -285,7 +289,7 @@ export function CandleChart({
         gradient.addColorStop(1, 'transparent');
         ctx.save();
         tracePath();
-        ctx.lineTo(xOf(candles.length - 1), priceBottom);
+        ctx.lineTo(xOf(bars.length - 1), priceBottom);
         ctx.lineTo(xOf(0), priceBottom);
         ctx.closePath();
         ctx.globalAlpha = 0.7;
@@ -332,7 +336,7 @@ export function CandleChart({
 
     // --- last price ---
     if (showLastPrice) {
-      const prior = candles.length > 1 ? candles[candles.length - 2].close : lastBar.open;
+      const prior = bars.length > 1 ? bars[bars.length - 2].close : lastBar.open;
       const up = lastBar.close >= prior;
       ctx.strokeStyle = up ? c['--up'] : c['--down'];
       ctx.lineWidth = 1;
@@ -350,7 +354,7 @@ export function CandleChart({
     }
 
     // --- crosshair ---
-    if (crosshair && hover && candles[hover.index]) {
+    if (crosshair && hover && bars[hover.index]) {
       const cx = xOf(hover.index);
       ctx.strokeStyle = c['--chart-crosshair'];
       ctx.lineWidth = 1;
@@ -369,7 +373,7 @@ export function CandleChart({
       );
     }
   }, [
-    candles,
+    bars,
     averages,
     width,
     chartHeight,
@@ -385,7 +389,7 @@ export function CandleChart({
 
   if (loading) return <CandleChartSkeleton height={height ?? 320} className={className} />;
 
-  if (candles.length === 0) {
+  if (bars.length === 0) {
     return (
       <EmptyState
         className={cn('h-full justify-center', className)}
@@ -396,17 +400,17 @@ export function CandleChart({
     );
   }
 
-  const hovered = hover ? candles[hover.index] : undefined;
+  const hovered = hover ? bars[hover.index] : undefined;
 
   const handleMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!crosshair || candles.length === 0) return;
+    if (!crosshair || bars.length === 0) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const plotWidth = Math.max(1, rect.width - AXIS_WIDTH - PAD);
-    const slot = plotWidth / candles.length;
-    const index = Math.min(candles.length - 1, Math.max(0, Math.floor((x - PAD) / slot)));
+    const slot = plotWidth / bars.length;
+    const index = Math.min(bars.length - 1, Math.max(0, Math.floor((x - PAD) / slot)));
     setHover({ index, x, y: e.clientY - rect.top });
-    onHoverCandle?.(candles[index] ?? null, index);
+    onHoverCandle?.(bars[index] ?? null, index);
   };
 
   const clearHover = () => {

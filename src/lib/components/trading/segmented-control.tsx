@@ -1,3 +1,5 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group';
 import { cn } from '../../utils';

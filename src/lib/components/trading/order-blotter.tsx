@@ -1,3 +1,5 @@
+'use client';
+
 import { formatPrice, formatQuantity, formatTime } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument, Order, OrderStatus } from '../../types';
@@ -11,6 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '../ui/table';
+import { toArray } from '../../utils';
 import { EmptyState } from './empty-state';
 import { EmptyOrdersArt } from './illustrations';
 import { TableSkeleton } from './skeletons';
@@ -45,10 +48,11 @@ export function OrderBlotter({
 }: OrderBlotterProps) {
   const inst = useInstrument(instrument);
   const sizeDigits = inst.sizePrecision ?? 0;
+  const rows = toArray(orders);
 
   if (loading) return <TableSkeleton rows={3} columns={onCancel ? 9 : 8} className={className} />;
 
-  if (orders.length === 0) {
+  if (rows.length === 0) {
     return (
       <EmptyState
         className={className}
@@ -75,7 +79,7 @@ export function OrderBlotter({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {orders.map((order) => {
+        {rows.map((order) => {
           const live = order.status === 'working' || order.status === 'partial';
           const shown = order.limitPrice ?? order.stopPrice;
           return (

@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo } from 'react';
 import {
   directionOf,
@@ -8,7 +10,7 @@ import {
 } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument, Position } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import {
@@ -77,7 +79,7 @@ export function PositionsTable({
   className,
 }: PositionsTableProps) {
   const inst = useInstrument(instrument);
-  const rows = useMemo(() => positions.map(derivePosition), [positions]);
+  const rows = useMemo(() => toArray(positions).map(derivePosition), [positions]);
 
   const totals = useMemo(
     () =>

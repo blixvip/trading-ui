@@ -4,6 +4,7 @@
    server-renders every exported component to catch anything that throws. */
 declare const process: { exit(code: number): never };
 
+import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import {
   Badge,
@@ -16,6 +17,7 @@ import {
   OrderBook,
   OrderTicket,
   Panel,
+  PanelBoundary,
   PositionsTable,
   Price,
   ScrollArea,
@@ -70,6 +72,8 @@ import {
   quotesToHeatmap,
   resolveSession,
   resolveTimeRange,
+  resetKeysChanged,
+  toArray,
 } from '../src/lib';
 
 let failures = 0;
@@ -462,6 +466,66 @@ check('leverage states liquidation distance', html.includes('liquidation'));
 check('degraded feed flagged when slow', html.includes('Degraded'));
 check('triggered alert stays listed', html.includes('Triggered'));
 check('day range bar is a meter', (html.match(/role="meter"/g) ?? []).length >= 2);
+
+/* ---------------------------------------------------------------------------
+   Feed resilience.
+
+   A live feed is not a type system. Sockets drop fields, REST hands back null
+   for "no rows yet", and a panel mounts before its first payload lands. None
+   of that may unmount the tree - a component with nothing to show renders its
+   empty state instead. Every assertion below threw before the `toArray`
+   normalization went in.
+   --------------------------------------------------------------------------- */
+console.log('\nfeed resilience');
+const JUNK: unknown[] = [null, undefined, 'not-an-array', 42, {}];
+
+function survives(name: string, render: (bad: any) => ReactElement) {
+  for (const bad of JUNK) {
+    try {
+      renderToStaticMarkup(<TradingProvider>{render(bad)}</TradingProvider>);
+    } catch (error) {
+      check(`${name} survives ${String(bad)}`, false, (error as Error).message);
+      return;
+    }
+  }
+  check(`${name} survives a malformed payload`, true);
+}
+
+survives('OrderBook', (b) => <OrderBook book={b} />);
+survives('OrderBook sides', (b) => <OrderBook book={{ bids: b, asks: b }} />);
+survives('DepthChart', (b) => <DepthChart book={{ bids: b, asks: b }} />);
+survives('DomLadder', (b) => <DomLadder book={{ bids: b, asks: b }} />);
+survives('CandleChart', (b) => <CandleChart candles={b} />);
+survives('VolumeProfile', (b) => <VolumeProfile candles={b} />);
+survives('PnlChart', (b) => <PnlChart points={b} />);
+survives('Sparkline', (b) => <Sparkline data={b} />);
+survives('Watchlist', (b) => <Watchlist quotes={b} />);
+survives('QuoteGrid', (b) => <QuoteGrid quotes={b} />);
+survives('TickerTape', (b) => <TickerTape quotes={b} />);
+survives('TradeTape', (b) => <TradeTape trades={b} />);
+survives('PositionsTable', (b) => <PositionsTable positions={b} />);
+survives('OrderBlotter', (b) => <OrderBlotter orders={b} />);
+survives('MarketHeatmap', (b) => <MarketHeatmap items={b} />);
+
+// Normalization must not cost referential stability, or every useMemo in the
+// library re-runs on every render of a component that has no data yet.
+check('toArray returns a stable identity', toArray(null) === toArray(undefined));
+check('toArray passes real arrays through', toArray(quotes) === quotes);
+check('toArray result is frozen', Object.isFrozen(toArray(null)));
+
+/* PanelBoundary. React runs error boundaries on the client only - they never
+   fire under renderToStaticMarkup - so what a server-side suite can assert is
+   the reset logic and the fact that the happy path is transparent. */
+console.log('\npanel boundary');
+check('passes children through when nothing throws',
+  renderToStaticMarkup(<PanelBoundary><span>live</span></PanelBoundary>).includes('live'));
+check('derives error state', PanelBoundary.getDerivedStateFromError(new Error('x')).error instanceof Error);
+check('reset on a changed key', resetKeysChanged(['AAPL'], ['NVDA']));
+check('no reset on an identical key', !resetKeysChanged(['AAPL'], ['AAPL']));
+check('reset on a longer key list', resetKeysChanged(['AAPL'], ['AAPL', '1m']));
+check('reset on a shorter key list', resetKeysChanged(['AAPL', '1m'], ['AAPL']));
+check('NaN keys compare as equal (Object.is)', !resetKeysChanged([NaN], [NaN]));
+check('empty key lists never reset', !resetKeysChanged([], []));
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

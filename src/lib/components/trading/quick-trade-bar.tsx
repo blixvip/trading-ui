@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import { formatQuantity } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';

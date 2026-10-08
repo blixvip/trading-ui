@@ -33,7 +33,7 @@ const CATALOGUE_POSITIONS: Position[] = [
   { symbol: 'TSLA', quantity: -80, avgPrice: 251.1, markPrice: 243.9 },
 ];
 
-const REPO = 'https://github.com/OWNER/trading-ui';
+const REPO = 'https://github.com/blixvip/trading-ui';
 
 /** Initial state from the query string, so every variant has a shareable URL. */
 function param(name: string): string | null {
@@ -223,7 +223,7 @@ function Hero({
             style={{ animationDelay: '240ms' }}
           >
             <CopyCommand
-              command="npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/trading-terminal.json"
+              command="npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/trading-terminal.json"
               label="npx shadcn@latest add …/r/trading-terminal.json"
               className="min-w-0 flex-1 sm:max-w-xl"
             />
@@ -392,12 +392,12 @@ function Install() {
           </p>
           <CopyCommand
             size="sm"
-            command="npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/order-book.json"
+            command="npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/order-book.json"
             label="shadcn add …/r/order-book.json"
           />
           <CopyCommand
             size="sm"
-            command="npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/trading-terminal.json"
+            command="npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/r/trading-terminal.json"
             label="shadcn add …/r/trading-terminal.json"
           />
         </div>

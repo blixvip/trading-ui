@@ -1,8 +1,10 @@
+'use client';
+
 import { useMemo } from 'react';
 import { formatCompact, formatPercent, formatPrice, formatQuantity } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { BookLevel, Instrument, OrderBookSnapshot } from '../../types';
-import { cn } from '../../utils';
+import { cn, toBook } from '../../utils';
 import { EmptyState } from './empty-state';
 import { EmptyBookArt } from './illustrations';
 import { OrderBookSkeleton } from './skeletons';
@@ -35,7 +37,7 @@ interface Row extends BookLevel {
   total: number;
 }
 
-function cumulate(levels: BookLevel[], depth: number): Row[] {
+function cumulate(levels: readonly BookLevel[], depth: number): Row[] {
   let total = 0;
   return levels.slice(0, depth).map((level) => {
     total += level.size;
@@ -71,8 +73,9 @@ export function OrderBook({
   const sizeDigits = inst.sizePrecision ?? 0;
 
   const { bids, asks, scale, spread, spreadPct, mid } = useMemo(() => {
-    const b = cumulate(book.bids, depth);
-    const a = cumulate(book.asks, depth);
+    const safe = toBook(book);
+    const b = cumulate(safe.bids, depth);
+    const a = cumulate(safe.asks, depth);
     const pick = (row: Row) => (cumulativeBars ? row.total : row.size);
     const peak = Math.max(1, ...b.map(pick), ...a.map(pick));
     const bestBid = b[0]?.price ?? 0;

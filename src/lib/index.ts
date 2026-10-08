@@ -101,6 +101,11 @@ export { Stat, type StatProps } from './components/trading/stat';
 
 export { EmptyState, type EmptyStateProps } from './components/trading/empty-state';
 export {
+  PanelBoundary,
+  resetKeysChanged,
+  type PanelBoundaryProps,
+} from './components/trading/error-boundary';
+export {
   EmptyBookArt,
   EmptyChartArt,
   EmptyOrdersArt,
@@ -222,7 +227,7 @@ export {
 export { OrderBlotter, type OrderBlotterProps } from './components/trading/order-blotter';
 
 // --- utilities ---
-export { cn } from './utils';
+export { cn, toArray, toBook } from './utils';
 export {
   formatPrice,
   formatQuantity,

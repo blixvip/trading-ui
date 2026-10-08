@@ -1,8 +1,10 @@
+'use client';
+
 import { useMemo } from 'react';
 import { formatCompact, formatPrice } from '../../format';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Candle, Instrument } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 
 export interface VolumeProfileProps {
   candles: Candle[];
@@ -47,12 +49,14 @@ export function VolumeProfile({
 }: VolumeProfileProps) {
   const inst = useInstrument(instrument);
 
+  const bars = toArray(candles);
+
   const model = useMemo(() => {
-    if (candles.length === 0) return null;
+    if (bars.length === 0) return null;
 
     let lo = Infinity;
     let hi = -Infinity;
-    for (const c of candles) {
+    for (const c of bars) {
       if (c.low < lo) lo = c.low;
       if (c.high > hi) hi = c.high;
     }
@@ -68,7 +72,7 @@ export function VolumeProfile({
       isPoc: false,
     }));
 
-    for (const candle of candles) {
+    for (const candle of bars) {
       const first = Math.max(0, Math.floor((candle.low - lo) / step));
       const last = Math.min(buckets - 1, Math.floor((candle.high - lo) / step));
       const span = last - first + 1;
@@ -101,7 +105,7 @@ export function VolumeProfile({
     for (let i = low; i <= high; i++) rows[i].inValueArea = true;
 
     return { rows: rows.reverse(), peak, lo, hi };
-  }, [candles, buckets, valueAreaPercent]);
+  }, [bars, buckets, valueAreaPercent]);
 
   if (!model) {
     return (

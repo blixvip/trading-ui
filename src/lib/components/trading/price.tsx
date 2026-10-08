@@ -1,3 +1,5 @@
+'use client';
+
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument } from '../../types';
 import { formatPrice } from '../../format';

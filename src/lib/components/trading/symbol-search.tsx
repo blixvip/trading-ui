@@ -1,3 +1,5 @@
+'use client';
+
 import { SearchIcon } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { formatPrice } from '../../format';

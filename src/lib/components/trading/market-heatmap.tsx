@@ -1,7 +1,9 @@
+'use client';
+
 import { useMemo } from 'react';
 import { formatPercent } from '../../format';
 import type { Quote } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 
 export interface HeatmapItem {
   symbol: string;
@@ -43,8 +45,8 @@ interface Tile extends HeatmapItem {
  * degenerate into unreadable slivers as soon as one constituent dominates — and
  * in any real market one always does.
  */
-function squarify(items: HeatmapItem[], width: number, height: number): Tile[] {
-  const sorted = [...items].filter((i) => i.weight > 0).sort((a, b) => b.weight - a.weight);
+function squarify(items: readonly HeatmapItem[], width: number, height: number): Tile[] {
+  const sorted = toArray(items).slice().filter((i) => i.weight > 0).sort((a, b) => b.weight - a.weight);
   const total = sorted.reduce((sum, i) => sum + i.weight, 0);
   if (!total) return [];
 

@@ -1,7 +1,9 @@
+'use client';
+
 import { formatPrice } from '../../format';
 import { useReducedMotion } from '../../hooks';
 import type { Quote } from '../../types';
-import { cn } from '../../utils';
+import { cn, toArray } from '../../utils';
 import { Delta } from './delta';
 
 export interface TickerTapeProps {
@@ -31,9 +33,10 @@ export function TickerTape({
 }: TickerTapeProps) {
   const reducedMotion = useReducedMotion();
 
-  if (quotes.length === 0) return null;
+  const strip = toArray(quotes);
+  if (strip.length === 0) return null;
 
-  const items = reducedMotion ? quotes : [...quotes, ...quotes];
+  const items = reducedMotion ? strip : [...strip, ...strip];
 
   return (
     <div
@@ -55,7 +58,7 @@ export function TickerTape({
       >
         {items.map((quote, i) => {
           const change = quote.last - quote.prevClose;
-          const duplicate = i >= quotes.length;
+          const duplicate = i >= strip.length;
           return (
             <button
               key={`${quote.symbol}-${i}`}

@@ -1,3 +1,5 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import type { Direction } from '../../types';
 import { cn } from '../../utils';

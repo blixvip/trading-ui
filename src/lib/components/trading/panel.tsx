@@ -1,3 +1,5 @@
+'use client';
+
 import type { ComponentProps, ReactNode } from 'react';
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { cn } from '../../utils';

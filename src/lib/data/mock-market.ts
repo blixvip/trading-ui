@@ -1,3 +1,5 @@
+'use client';
+
 import { decimalsOf, roundToTick } from '../format';
 import type { BookLevel, Candle, OrderBookSnapshot, Quote, Trade } from '../types';
 

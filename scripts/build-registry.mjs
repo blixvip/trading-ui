@@ -17,7 +17,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const HOMEPAGE = 'https://github.com/OWNER/trading-ui';
+const HOMEPAGE = 'https://github.com/blixvip/trading-ui';
 
 /** Shared source files, referenced by name from the items below. */
 const LIB = {
@@ -94,6 +94,14 @@ const items = [
   },
 
   // --- primitives ---
+  {
+    name: 'panel-boundary',
+    type: 'registry:component',
+    title: 'PanelBoundary',
+    description:
+      'React error boundary that contains a render fault to one widget instead of unmounting the terminal, with resetKeys recovery and an onError hook for your reporter.',
+    files: [TRADING('error-boundary'), ...LIB.utils],
+  },
   {
     name: 'panel',
     type: 'registry:component',

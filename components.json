@@ -19,6 +19,6 @@
     "utils": "@/lib/utils"
   },
   "registries": {
-    "@trading-ui": "https://raw.githubusercontent.com/OWNER/trading-ui/main/r/{name}.json"
+    "@trading-ui": "https://raw.githubusercontent.com/blixvip/trading-ui/main/r/{name}.json"
   }
 }

@@ -1,3 +1,5 @@
+'use client';
+
 import { BellIcon, BellRingIcon, XIcon } from 'lucide-react';
 import { useState } from 'react';
 import { formatPercent, formatPrice, roundToTick } from '../../format';

@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo, useState } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
 import { formatCompact, formatPrice } from '../../format';
@@ -12,6 +14,7 @@ import {
   TableRow,
 } from '../ui/table';
 import { Delta } from './delta';
+import { toArray } from '../../utils';
 import { EmptyState } from './empty-state';
 import { EmptyWatchlistArt } from './illustrations';
 import { Price } from './price';
@@ -81,8 +84,10 @@ export function QuoteGrid({
     }
   };
 
+  const rows0 = toArray(quotes);
+
   const rows = useMemo(() => {
-    const copy = [...quotes];
+    const copy = rows0.slice();
     copy.sort((a, b) => {
       const av = valueFor(a, sort.key);
       const bv = valueFor(b, sort.key);
@@ -93,11 +98,11 @@ export function QuoteGrid({
       return sort.desc ? -cmp : cmp;
     });
     return copy;
-  }, [quotes, sort]);
+  }, [rows0, sort]);
 
   if (loading) return <TableSkeleton rows={6} columns={columns.length + 1} className={className} />;
 
-  if (quotes.length === 0) {
+  if (rows0.length === 0) {
     return (
       <EmptyState
         className={className}

@@ -1,10 +1,12 @@
+'use client';
+
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { crisp, makeScale, niceTicks, prepareCanvas, readTokens } from '../../canvas';
 import { formatCompact, formatPrice } from '../../format';
 import { useElementSize } from '../../hooks';
 import { useInstrument } from '../../theme/theme-provider';
 import type { Instrument, OrderBookSnapshot } from '../../types';
-import { cn } from '../../utils';
+import { cn, toBook } from '../../utils';
 
 export interface DepthChartProps {
   book: OrderBookSnapshot;
@@ -54,15 +56,16 @@ export function DepthChart({
   const [hover, setHover] = useState<{ x: number; y: number } | null>(null);
 
   const model = useMemo(() => {
-    const bestBid = book.bids[0]?.price;
-    const bestAsk = book.asks[0]?.price;
+    const safe = toBook(book);
+    const bestBid = safe.bids[0]?.price;
+    const bestAsk = safe.asks[0]?.price;
     if (bestBid === undefined || bestAsk === undefined) return null;
 
     const mid = (bestBid + bestAsk) / 2;
     const lo = mid * (1 - range);
     const hi = mid * (1 + range);
 
-    const cumulate = (levels: { price: number; size: number }[]) => {
+    const cumulate = (levels: readonly { price: number; size: number }[]) => {
       let total = 0;
       return levels
         .filter((l) => l.price >= lo && l.price <= hi)
