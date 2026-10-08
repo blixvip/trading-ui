@@ -137,6 +137,77 @@ export { Watchlist, type WatchlistProps } from './components/trading/watchlist';
 export { SymbolHeader, type SymbolHeaderProps } from './components/trading/symbol-header';
 
 export {
+  BuySellButtons,
+  type BuySellButtonsProps,
+} from './components/trading/buy-sell-buttons';
+export { QuickTradeBar, type QuickTradeBarProps } from './components/trading/quick-trade-bar';
+export {
+  IntervalPicker,
+  INTERVALS,
+  intervalMs,
+  type IntervalPickerProps,
+  type Interval,
+  type IntervalOption,
+} from './components/trading/interval-picker';
+export {
+  TimeRangePicker,
+  TIME_RANGES,
+  resolveTimeRange,
+  type TimeRangePickerProps,
+  type TimeRange,
+} from './components/trading/time-range-picker';
+export {
+  SessionClock,
+  resolveSession,
+  US_EQUITIES,
+  ALWAYS_OPEN,
+  type SessionClockProps,
+  type SessionWindow,
+  type SessionPhase,
+  type SessionState,
+} from './components/trading/session-clock';
+export { DomLadder, type DomLadderProps, type DomOrder } from './components/trading/dom-ladder';
+export { VolumeProfile, type VolumeProfileProps } from './components/trading/volume-profile';
+export {
+  MarketHeatmap,
+  quotesToHeatmap,
+  type MarketHeatmapProps,
+  type HeatmapItem,
+} from './components/trading/market-heatmap';
+export { QuoteGrid, type QuoteGridProps, type QuoteColumn } from './components/trading/quote-grid';
+export { DayRangeBar, type DayRangeBarProps } from './components/trading/day-range-bar';
+export { PnlChart, type PnlChartProps, type EquityPoint } from './components/trading/pnl-chart';
+export {
+  AccountSummary,
+  MarginBar,
+  RiskMeter,
+  type AccountSummaryProps,
+  type Account,
+  type MarginBarProps,
+  type RiskMeterProps,
+} from './components/trading/account-summary';
+export { ExposureBar, type ExposureBarProps } from './components/trading/exposure-bar';
+export {
+  BracketFields,
+  LeverageSlider,
+  type BracketFieldsProps,
+  type BracketValue,
+  type LeverageSliderProps,
+} from './components/trading/bracket-fields';
+export {
+  ConnectionStatus,
+  type ConnectionStatusProps,
+  type FeedState,
+} from './components/trading/connection-status';
+export { SymbolSearch, type SymbolSearchProps } from './components/trading/symbol-search';
+export {
+  PriceAlerts,
+  type PriceAlertsProps,
+  type PriceAlert,
+  type AlertDirection,
+} from './components/trading/price-alerts';
+
+export {
   OrderTicket,
   validateOrder,
   type OrderTicketProps,
@@ -184,6 +255,8 @@ export {
   generateQuotes,
   createMarket,
   stepMarket,
+  generateEquityCurve,
+  generateVolumeAtPrice,
 } from './data/mock-market';
 export type {
   MarketState,
@@ -191,6 +264,8 @@ export type {
   GenerateCandlesOptions,
   GenerateBookOptions,
   GenerateTradesOptions,
+  GenerateEquityOptions,
+  EquitySample,
 } from './data/mock-market';
 export { useMockMarket, type UseMockMarketOptions } from './data/use-mock-market';
 

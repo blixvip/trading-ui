@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react';
 import {
   Badge,
+  BuySellButtons,
   Button,
   CandleChart,
+  ConnectionStatus,
   DepthChart,
+  IntervalPicker,
+  SessionClock,
   OrderBlotter,
   OrderBook,
   OrderTicket,
@@ -14,20 +18,15 @@ import {
   SymbolHeader,
   TradeTape,
   Watchlist,
+  intervalMs,
   type CandleChartKind,
+  type Interval,
   type Order,
   type OrderDraft,
   type Position,
   type Quote,
   useMockMarket,
 } from '../lib';
-
-const INTERVALS = [
-  { value: '1m', label: '1m', ms: 60_000 },
-  { value: '5m', label: '5m', ms: 300_000 },
-  { value: '1h', label: '1H', ms: 3_600_000 },
-  { value: '1D', label: '1D', ms: 86_400_000 },
-] as const;
 
 const SEED_POSITIONS: Position[] = [
   { symbol: 'AAPL', quantity: 400, avgPrice: 178.42, markPrice: 182.4 },
@@ -50,16 +49,15 @@ export interface TerminalProps {
  * rather than a screenshot of one.
  */
 export function Terminal({ quotes, symbol, onSymbolChange, live }: TerminalProps) {
-  const [timeframe, setTimeframe] = useState<(typeof INTERVALS)[number]['value']>('1m');
+  const [timeframe, setTimeframe] = useState<Interval>('1m');
   const [kind, setKind] = useState<CandleChartKind>('candle');
   const [showMa, setShowMa] = useState(true);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  const intervalMs = INTERVALS.find((i) => i.value === timeframe)!.ms;
   const market = useMockMarket(symbol, {
     ticksPerSecond: 2,
     paused: !live,
-    intervalMs,
+    intervalMs: intervalMs(timeframe),
     tickSize: 0.01,
   });
 
@@ -114,6 +112,11 @@ export function Terminal({ quotes, symbol, onSymbolChange, live }: TerminalProps
 
   return (
     <div className="flex flex-col gap-2.5">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+        <SessionClock showClock={false} />
+        <ConnectionStatus state={live ? 'connected' : 'disconnected'} latencyMs={live ? 34 : undefined} />
+      </div>
+
       <SymbolHeader quote={quote} />
 
       {/* Four columns at xl so nothing has to scroll to be read: the book and
@@ -133,12 +136,10 @@ export function Terminal({ quotes, symbol, onSymbolChange, live }: TerminalProps
               >
                 MA 20/50
               </Button>
-              <SegmentedControl
-                size="sm"
-                aria-label="Interval"
+              <IntervalPicker
                 value={timeframe}
                 onChange={setTimeframe}
-                options={INTERVALS.map(({ value, label }) => ({ value, label }))}
+                favorites={['1m', '5m', '1H', '1D']}
               />
               <SegmentedControl
                 size="sm"
@@ -147,7 +148,6 @@ export function Terminal({ quotes, symbol, onSymbolChange, live }: TerminalProps
                 onChange={setKind}
                 options={[
                   { value: 'candle', label: 'Candles' },
-                  { value: 'hollow', label: 'Hollow' },
                   { value: 'line', label: 'Line' },
                   { value: 'area', label: 'Area' },
                 ]}
@@ -197,6 +197,24 @@ export function Terminal({ quotes, symbol, onSymbolChange, live }: TerminalProps
             confirm
             onSubmit={submitOrder}
           />
+          <div className="border-t p-2.5">
+            <BuySellButtons
+              bid={market.book.bids[0]?.price ?? market.last}
+              ask={market.book.asks[0]?.price ?? market.last}
+              quantity={100}
+              quantityLabel="sh"
+              size="sm"
+              onTrade={(side) =>
+                submitOrder({
+                  symbol,
+                  side,
+                  type: 'market',
+                  quantity: 100,
+                  timeInForce: 'ioc',
+                })
+              }
+            />
+          </div>
         </Panel>
       </div>
 

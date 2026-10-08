@@ -22,7 +22,24 @@
     "@trading-ui/symbol-header",
     "@trading-ui/order-ticket",
     "@trading-ui/positions-table",
-    "@trading-ui/order-blotter"
+    "@trading-ui/order-blotter",
+    "@trading-ui/buy-sell-buttons",
+    "@trading-ui/quick-trade-bar",
+    "@trading-ui/bracket-fields",
+    "@trading-ui/interval-picker",
+    "@trading-ui/time-range-picker",
+    "@trading-ui/session-clock",
+    "@trading-ui/dom-ladder",
+    "@trading-ui/volume-profile",
+    "@trading-ui/market-heatmap",
+    "@trading-ui/quote-grid",
+    "@trading-ui/day-range-bar",
+    "@trading-ui/pnl-chart",
+    "@trading-ui/account-summary",
+    "@trading-ui/exposure-bar",
+    "@trading-ui/connection-status",
+    "@trading-ui/symbol-search",
+    "@trading-ui/price-alerts"
   ],
   "files": []
 }

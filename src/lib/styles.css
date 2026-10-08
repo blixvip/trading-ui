@@ -57,6 +57,7 @@
   --down-muted: #cf3b361f;
   --down-line: #cf3b3673;
   --flat: #8b97a9;
+  --warn: #b45309;
 
   /* Chart surface. Separate from --card so a chart can sit on its own ground. */
   --chart-grid: #e6ebf3;
@@ -95,6 +96,7 @@
   --down-muted: #e0544e29;
   --down-line: #e0544e8c;
   --flat: #7a879c;
+  --warn: #e8a33d;
 
   --chart-grid: #1b2435;
   --chart-axis: #5f6d84;
@@ -157,6 +159,7 @@
   --color-down-muted: var(--down-muted);
   --color-down-line: var(--down-line);
   --color-flat: var(--flat);
+  --color-warn: var(--warn);
 
   --color-chart-grid: var(--chart-grid);
   --color-chart-axis: var(--chart-axis);

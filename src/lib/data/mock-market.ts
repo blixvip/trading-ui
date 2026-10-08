@@ -343,3 +343,72 @@ export function stepMarket(
     seq: state.seq + 1,
   };
 }
+
+/* ------------------------------------------------------------------------- *
+ * Generators for the portfolio and account components.
+ * ------------------------------------------------------------------------- */
+
+export interface GenerateEquityOptions {
+  points?: number;
+  /** Starting account equity. */
+  start?: number;
+  /** Per-point stdev as a fraction. */
+  volatility?: number;
+  drift?: number;
+  intervalMs?: number;
+  endTime?: number;
+  seed?: number;
+}
+
+/**
+ * An equity curve with realistic shape: a drift, plus occasional losing runs
+ * so there is an actual drawdown for `PnlChart` to shade. A pure random walk
+ * tends to look suspiciously smooth at this length.
+ */
+export function generateEquityCurve(options: GenerateEquityOptions = {}): EquitySample[] {
+  const {
+    points = 96,
+    start = 250_000,
+    volatility = 0.004,
+    drift = 0.0012,
+    intervalMs = 900_000,
+    endTime = Date.now(),
+    seed = 31,
+  } = options;
+
+  const rnd = createRandom(seed);
+  const out: EquitySample[] = [];
+  let equity = start;
+  let slump = 0;
+
+  for (let i = 0; i < points; i++) {
+    if (slump <= 0 && rnd() > 0.93) slump = 3 + Math.floor(rnd() * 7);
+    const bias = slump > 0 ? -volatility * 0.9 : drift;
+    if (slump > 0) slump--;
+    equity = Math.max(1, equity * (1 + bias + gaussian(rnd) * volatility));
+    out.push({
+      time: endTime - (points - 1 - i) * intervalMs,
+      equity: Number(equity.toFixed(2)),
+    });
+  }
+
+  return out;
+}
+
+export interface EquitySample {
+  time: number;
+  equity: number;
+}
+
+/** Traded volume per price level, for the DOM ladder's centre histogram. */
+export function generateVolumeAtPrice(
+  trades: Trade[],
+  tickSize = 0.01,
+): Record<number, number> {
+  const out: Record<number, number> = {};
+  for (const trade of trades) {
+    const price = Number((Math.round(trade.price / tickSize) * tickSize).toFixed(8));
+    out[price] = (out[price] ?? 0) + trade.size;
+  }
+  return out;
+}

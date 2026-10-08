@@ -1,19 +1,40 @@
 import type { ReactNode } from 'react';
 import {
+  AccountSummary,
+  BracketFields,
+  BuySellButtons,
   CandleChart,
+  ConnectionStatus,
+  DayRangeBar,
   Delta,
   DepthChart,
+  DomLadder,
+  ExposureBar,
+  IntervalPicker,
+  LeverageSlider,
+  MarketHeatmap,
   NumberField,
   OrderBook,
   OrderTicket,
   Panel,
+  PnlChart,
   PositionsTable,
   Price,
+  PriceAlerts,
+  QuickTradeBar,
+  QuoteGrid,
+  RiskMeter,
+  SessionClock,
   Sparkline,
   Stat,
+  TimeRangePicker,
   TradeTape,
+  VolumeProfile,
   Watchlist,
   formatCompact,
+  generateEquityCurve,
+  generateVolumeAtPrice,
+  quotesToHeatmap,
   type MarketState,
   type Position,
   type Quote,
@@ -194,6 +215,238 @@ export function buildCatalogue(
           <div className="flex flex-col gap-3">
             <NumberField label="Limit price" value={182.4} onChange={() => undefined} step={0.01} suffix="$" />
             <NumberField label="Quantity" value={100} onChange={() => undefined} step={1} />
+          </div>
+        </Panel>
+      ),
+    },
+
+    // --- dealing ---
+    {
+      id: 'buy-sell-buttons',
+      name: 'BuySellButtons',
+      blurb:
+        'One-click dealing: sell at the bid, buy at the offer, spread between them. The price on the button flashes when it moves.',
+      note: 'Sell left, buy right — the order a book is drawn in, because muscle memory on a desk is built on position, not on reading the label.',
+      preview: (
+        <Panel title="Deal" padded>
+          <BuySellButtons
+            bid={market.book.bids[0].price}
+            ask={market.book.asks[0].price}
+            quantity={100}
+            quantityLabel="sh"
+            size="lg"
+          />
+        </Panel>
+      ),
+    },
+    {
+      id: 'quick-trade-bar',
+      name: 'QuickTradeBar',
+      blurb: 'Preset sizes with buy, sell, flatten and reverse.',
+      note: 'Flatten and Reverse sit behind a rule and only light up when a position exists — they act on everything you hold.',
+      wide: true,
+      preview: (
+        <Panel title="Quick trade">
+          <QuickTradeBar
+            positionQuantity={400}
+            onTrade={() => undefined}
+            onFlatten={() => undefined}
+            onReverse={() => undefined}
+          />
+        </Panel>
+      ),
+    },
+
+    // --- advanced market data ---
+    {
+      id: 'dom-ladder',
+      name: 'DomLadder',
+      blurb:
+        'Depth of market on a fixed price axis: click a size cell to work an order, click your own to pull it.',
+      note: 'The price column does not re-sort. In a book the rows move as liquidity changes, and the level under your cursor becomes a different price between intent and click.',
+      // A DOM is a narrow instrument in practice; stretched across a full
+      // content column its size cells read as empty space.
+      preview: (
+        <Panel title="DOM" className="max-w-sm">
+          <DomLadder
+            book={market.book}
+            depth={7}
+            lastPrice={market.last}
+            orders={[{ price: market.book.bids[1].price, quantity: 200, side: 'buy' }]}
+            volumeAtPrice={generateVolumeAtPrice(market.trades)}
+            onPlace={() => undefined}
+            onCancel={() => undefined}
+          />
+        </Panel>
+      ),
+    },
+    {
+      id: 'volume-profile',
+      name: 'VolumeProfile',
+      blurb: 'Volume traded at each price, with the point of control and value area marked.',
+      note: 'Each bar’s volume is spread across the buckets its range actually covered, not dumped at its close — that shortcut invents a spike that never traded.',
+      preview: (
+        <Panel title="Volume at price" padded>
+          <VolumeProfile candles={market.candles} height={240} />
+        </Panel>
+      ),
+    },
+    {
+      id: 'market-heatmap',
+      name: 'MarketHeatmap',
+      blurb: 'A market or a book as a treemap: area is weight, colour is direction.',
+      note: 'Squarified, not slice-and-dice — strip layouts collapse into unreadable slivers the moment one constituent dominates, and one always does.',
+      wide: true,
+      preview: (
+        <Panel title="Heatmap" padded>
+          <MarketHeatmap items={quotesToHeatmap(quotes)} height={260} onSelect={() => undefined} />
+        </Panel>
+      ),
+    },
+    {
+      id: 'quote-grid',
+      name: 'QuoteGrid',
+      blurb: 'A dense, sortable quote board with bid, ask, volume and an inline trend.',
+      wide: true,
+      preview: (
+        <Panel title="Quotes" scroll>
+          <QuoteGrid quotes={quotes} selected={quotes[0].symbol} onSelect={() => undefined} />
+        </Panel>
+      ),
+    },
+
+    // --- time ---
+    {
+      id: 'interval-picker',
+      name: 'IntervalPicker · TimeRangePicker · SessionClock',
+      blurb:
+        'The time controls: chart intervals with the rest behind a grouped dropdown, a lookback range, and market phase with a countdown.',
+      note: 'resolveTimeRange is calendar-aware — YTD means January 1st, and a month back from the 31st is not thirty days earlier.',
+      preview: (
+        <Panel title="Time" padded>
+          <div className="flex flex-col gap-4">
+            <IntervalPicker value="5m" onChange={() => undefined} />
+            <TimeRangePicker value="1M" onChange={() => undefined} />
+            <SessionClock />
+          </div>
+        </Panel>
+      ),
+    },
+
+    // --- account and risk ---
+    {
+      id: 'pnl-chart',
+      name: 'PnlChart',
+      blurb: 'The equity curve, with drawdown shaded beneath it.',
+      note: 'The curve is coloured against your starting equity, but the shading is measured from the running peak — "up on the day" and "below the high-water mark" are different questions.',
+      wide: true,
+      preview: (
+        <Panel title="Equity">
+          <PnlChart points={generateEquityCurve({ points: 90 })} height={240} />
+        </Panel>
+      ),
+    },
+    {
+      id: 'account-summary',
+      name: 'AccountSummary · RiskMeter',
+      blurb: 'Equity, day P&L, buying power and margin utilisation.',
+      note: 'The margin bar is banded with its thresholds marked, because the question is not "how full" but "how close to a margin call".',
+      preview: (
+        <Panel title="Account">
+          <AccountSummary
+            account={{
+              equity: 254_320,
+              buyingPower: 180_000,
+              previousEquity: 250_000,
+              cash: 60_000,
+              marginUsed: 74_000,
+              marginAvailable: 120_000,
+              realizedPnl: 1_240,
+              unrealizedPnl: -860,
+            }}
+          />
+          <div className="px-3 pb-3">
+            <RiskMeter value={0.91} label="Concentration" />
+          </div>
+        </Panel>
+      ),
+    },
+    {
+      id: 'exposure-bar',
+      name: 'ExposureBar',
+      blurb: 'Gross exposure as a stacked bar, longs and shorts on their own tracks.',
+      note: 'Gross, not net: a book long 1M and short 1M is flat on a net reading and carrying two million of risk in reality.',
+      preview: (
+        <Panel title="Exposure">
+          <ExposureBar positions={positions} cash={50_000} onSelect={() => undefined} />
+        </Panel>
+      ),
+    },
+    {
+      id: 'bracket-fields',
+      name: 'BracketFields · LeverageSlider',
+      blurb:
+        'Stop loss and take profit with the implied risk/reward, and leverage with its liquidation distance.',
+      note: 'Traders set a stop and a target separately and then never do the division. That ratio is the whole point of the component.',
+      preview: (
+        <Panel title="Risk" padded>
+          <div className="flex flex-col gap-5">
+            <BracketFields
+              side="buy"
+              entryPrice={market.last}
+              quantity={100}
+              value={{
+                stopLoss: Number((market.last * 0.99).toFixed(2)),
+                takeProfit: Number((market.last * 1.02).toFixed(2)),
+              }}
+              onChange={() => undefined}
+            />
+            <LeverageSlider value={20} onChange={() => undefined} />
+          </div>
+        </Panel>
+      ),
+    },
+    {
+      id: 'day-range-bar',
+      name: 'DayRangeBar · ConnectionStatus · PriceAlerts',
+      blurb:
+        'Where price sits in its range, feed health with latency, and alert levels with their distance.',
+      note: 'A stale price is more dangerous than no price, because it still looks tradeable — so "connected but slow" is its own state, not a green dot.',
+      preview: (
+        <Panel title="Status" padded>
+          <div className="flex flex-col gap-4">
+            <DayRangeBar
+              low={quote.dayLow ?? quote.last * 0.98}
+              high={quote.dayHigh ?? quote.last * 1.02}
+              last={quote.last}
+              outerLow={(quote.dayLow ?? quote.last) * 0.82}
+              outerHigh={(quote.dayHigh ?? quote.last) * 1.18}
+              previousClose={quote.prevClose}
+            />
+            <div className="flex flex-wrap gap-4">
+              <ConnectionStatus state="connected" latencyMs={38} />
+              <ConnectionStatus state="connected" latencyMs={620} />
+              <ConnectionStatus state="disconnected" />
+            </div>
+            <PriceAlerts
+              prices={{ [quote.symbol]: quote.last }}
+              alerts={[
+                {
+                  id: 'a1',
+                  symbol: quote.symbol,
+                  price: Number((quote.last * 1.03).toFixed(2)),
+                  direction: 'above',
+                },
+                {
+                  id: 'a2',
+                  symbol: quote.symbol,
+                  price: Number((quote.last * 0.97).toFixed(2)),
+                  direction: 'below',
+                  triggeredAt: Date.now(),
+                },
+              ]}
+              onRemove={() => undefined}
+            />
           </div>
         </Panel>
       ),

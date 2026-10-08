@@ -1,8 +1,10 @@
 # trading-ui
 
-**The trading layer for shadcn/ui.** Candlestick and depth charts, an order
-book, time and sales, an order ticket, positions and a blotter — built on Radix
-primitives and Tailwind tokens, distributed the way shadcn distributes
+**The trading layer for shadcn/ui.** 35 components: candlestick, depth, volume-
+profile and P&L charts, an order book and a click-to-trade DOM ladder, time and
+sales, dealing buttons, an order ticket with brackets and leverage, positions,
+a blotter, account and risk meters, and the time controls a chart needs — built
+on Radix primitives and Tailwind tokens, distributed the way shadcn distributes
 components: copy the source into your app and own it.
 
 shadcn/ui, Radix, Mantine, MUI, Chakra, Ant Design and React Aria all solve the
@@ -19,23 +21,70 @@ npx shadcn@latest add https://raw.githubusercontent.com/OWNER/trading-ui/main/r/
 
 ## What's in it
 
-| Component          | What it does                                                               |
-| ------------------ | -------------------------------------------------------------------------- |
-| `CandleChart`      | OHLC on canvas: candles, hollow, line or area; volume, SMAs, crosshair      |
-| `DepthChart`       | Cumulative bid/ask depth, drawn as steps                                    |
-| `Sparkline`        | Inline SVG trend line with area fill and baseline                           |
-| `OrderBook`        | Ladder or two-column book, depth bars, spread row, your-order markers       |
-| `TradeTape`        | Time and sales, colored by aggressor side, block-print highlighting         |
-| `TickerTape`       | Seamless scrolling quote strip, pauses on hover                             |
-| `Watchlist`        | Symbol list with price, change and sparkline, as a real listbox             |
-| `SymbolHeader`     | Instrument banner: last with tick flash, change, bid/ask, range             |
-| `OrderTicket`      | Order entry with tick snapping, size slider, cost estimate, confirm dialog  |
-| `PositionsTable`   | Open positions marked to market, signed quantities                          |
-| `OrderBlotter`     | Today's orders and their state, with inline cancel                          |
-| `Panel`            | Widget frame that actually shrinks inside a grid layout                     |
-| `Price` `Delta` `Stat` `NumberField` `SegmentedControl` | The small parts the rest are built from |
-| `EmptyState` + `*Art`  | Authored SVG empty states — an empty ladder, a blank ticket, a spent tape    |
-| `Skeleton` + `*Skeleton` | Loading states shaped like the thing they replace                          |
+### Charts
+
+| Component | What it does |
+| --- | --- |
+| `CandleChart` | OHLC on canvas: candles, hollow, line or area; volume, moving averages, crosshair |
+| `DepthChart` | Cumulative bid/ask depth, drawn as steps |
+| `VolumeProfile` | Volume at price with point of control and value area |
+| `PnlChart` | Equity curve with drawdown shaded from the running peak |
+| `Sparkline` | Inline SVG trend line with area fill and baseline |
+
+### Market data
+
+| Component | What it does |
+| --- | --- |
+| `OrderBook` | Ladder or two-column book, depth bars, spread row, your-order markers |
+| `DomLadder` | Click-to-trade depth of market on a fixed price axis |
+| `TradeTape` | Time and sales, coloured by aggressor side, block prints called out |
+| `TickerTape` | Seamless scrolling quote strip, pauses on hover |
+| `QuoteGrid` | Dense, sortable multi-instrument quote board |
+| `MarketHeatmap` | Squarified treemap: area is weight, colour is direction |
+| `Watchlist` | Symbol list with price, change and sparkline, as a real listbox |
+| `SymbolHeader` | Instrument banner: last with tick flash, change, bid/ask, range |
+| `DayRangeBar` | Where price sits in its day range, with the 52-week range behind it |
+
+### Dealing
+
+| Component | What it does |
+| --- | --- |
+| `BuySellButtons` | One-click dealing with live bid/offer and the spread between |
+| `QuickTradeBar` | Preset sizes, buy/sell, plus flatten and reverse |
+| `OrderTicket` | Order entry with tick snapping, size slider, cost estimate, confirm |
+| `BracketFields` | Stop loss and take profit with the implied risk/reward |
+| `LeverageSlider` | Leverage with its liquidation distance stated |
+| `PositionsTable` | Open positions marked to market, signed quantities |
+| `OrderBlotter` | Today's orders and their state, with inline cancel |
+
+### Account and risk
+
+| Component | What it does |
+| --- | --- |
+| `AccountSummary` | Equity, day P&L, buying power, margin |
+| `MarginBar` `RiskMeter` | Banded meters that mark their thresholds |
+| `ExposureBar` | Gross exposure, longs and shorts on separate tracks |
+
+### Time and status
+
+| Component | What it does |
+| --- | --- |
+| `IntervalPicker` | Chart timeframes, favourites plus a grouped dropdown |
+| `TimeRangePicker` | 1D through ALL, with a calendar-aware resolver |
+| `SessionClock` | Market phase and a countdown to the next change |
+| `ConnectionStatus` | Feed health, latency, staleness |
+| `SymbolSearch` | Command-palette instrument search, ranked |
+| `PriceAlerts` | Alert levels with how far away each one is |
+
+### Scaffolding
+
+| Component | What it does |
+| --- | --- |
+| `Panel` | Widget frame that actually shrinks inside a grid layout |
+| `Price` `Delta` `Stat` | The readouts everything else is built from |
+| `NumberField` `SegmentedControl` | Entry and switching, tuned for order flow |
+| `EmptyState` + `*Art` | Authored SVG empty states |
+| `Skeleton` + `*Skeleton` | Loading states shaped like the thing they replace |
 
 Plus `useMockMarket` — a seeded, deterministic market feed so every component
 is demoable and testable without a data provider.
@@ -151,7 +200,7 @@ legitimate, it just shouldn't be a surprise.
 ```bash
 npm install
 npm run dev        # product site at http://localhost:4310
-npm test           # 66 assertions: formatting, market invariants, order rules, SSR render
+npm test           # 102 assertions: formatting, market invariants, order rules, SSR render
 npm run typecheck
 npm run build      # typecheck + test + library + registry
 ```

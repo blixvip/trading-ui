@@ -43,6 +43,33 @@ import {
   roundToTick,
   stepMarket,
   validateOrder,
+  AccountSummary,
+  BracketFields,
+  BuySellButtons,
+  ConnectionStatus,
+  DayRangeBar,
+  DomLadder,
+  ExposureBar,
+  IntervalPicker,
+  LeverageSlider,
+  MarketHeatmap,
+  PnlChart,
+  PriceAlerts,
+  QuickTradeBar,
+  QuoteGrid,
+  RiskMeter,
+  SessionClock,
+  SymbolSearch,
+  TimeRangePicker,
+  VolumeProfile,
+  ALWAYS_OPEN,
+  US_EQUITIES,
+  generateEquityCurve,
+  generateVolumeAtPrice,
+  intervalMs,
+  quotesToHeatmap,
+  resolveSession,
+  resolveTimeRange,
 } from '../src/lib';
 
 let failures = 0;
@@ -187,9 +214,67 @@ check(
   derivePosition({ symbol: 'X', quantity: 0, avgPrice: 0, markPrice: 10 }).unrealizedPct === 0,
 );
 
+console.log('time controls');
+check('intervalMs 5m', intervalMs('5m') === 300_000, intervalMs('5m'));
+check('intervalMs unknown falls back', intervalMs('nope' as never) === 60_000);
+{
+  // 10 March 2026, a Tuesday, 11:00 local.
+  const now = new Date(2026, 2, 10, 11, 0, 0);
+  const [from, to] = resolveTimeRange('YTD', now.getTime());
+  const fromDate = new Date(from);
+  check('YTD starts on Jan 1', fromDate.getMonth() === 0 && fromDate.getDate() === 1, fromDate.toDateString());
+  check('YTD ends now', to === now.getTime());
+  const [m1] = resolveTimeRange('1M', new Date(2026, 2, 31, 12).getTime());
+  check('1M back from Mar 31 lands in Feb/Mar, not 30 days', new Date(m1).getMonth() <= 2);
+  check('ALL starts at zero', resolveTimeRange('ALL', now.getTime())[0] === 0);
+}
+
+console.log('session clock');
+{
+  const tuesday = (h: number, m = 0) => new Date(2026, 2, 10, h, m);
+  check('open mid-session', resolveSession(US_EQUITIES, tuesday(11)).phase === 'open');
+  check('pre-market before the bell', resolveSession(US_EQUITIES, tuesday(8)).phase === 'pre');
+  check('after hours past the close', resolveSession(US_EQUITIES, tuesday(17)).phase === 'post');
+  check('closed overnight', resolveSession(US_EQUITIES, tuesday(2)).phase === 'closed');
+  const sunday = new Date(2026, 2, 8, 11);
+  check('closed on a non-trading day', resolveSession(US_EQUITIES, sunday).phase === 'closed');
+  const always = resolveSession(ALWAYS_OPEN, tuesday(3));
+  check('24/7 venue is always open', always.phase === 'open');
+  check('24/7 venue has no countdown', always.msToNext === null);
+  check('countdown to the close is positive', (resolveSession(US_EQUITIES, tuesday(11)).msToNext ?? 0) > 0);
+}
+
+console.log('derived market data');
+{
+  const vap = generateVolumeAtPrice(market.trades, 0.01);
+  const prices = Object.keys(vap).map(Number);
+  check('volume-at-price keys stay on the grid', prices.every(onGrid), prices[0]);
+  const totalVap = Object.values(vap).reduce((a, b) => a + b, 0);
+  const totalTrades = market.trades.reduce((sum, t) => sum + t.size, 0);
+  check('volume-at-price conserves size', totalVap === totalTrades, { totalVap, totalTrades });
+
+  const curve = generateEquityCurve({ points: 60, seed: 3 });
+  check('equity curve length', curve.length === 60, curve.length);
+  check('equity stays positive', curve.every((p) => p.equity > 0));
+  check('equity curve is ordered', curve.every((p, i, a) => i === 0 || p.time > a[i - 1].time));
+  check(
+    'equity curve is deterministic',
+    generateEquityCurve({ points: 60, seed: 3 })[59].equity === curve[59].equity,
+  );
+  check(
+    'equity curve actually drops below its peak',
+    curve.some((p, i) => p.equity < Math.max(...curve.slice(0, i + 1).map((q) => q.equity))),
+  );
+}
+
 console.log('render');
 const quotes = generateQuotes();
 const positions = [long, short];
+
+const heat = quotesToHeatmap(quotes);
+check('heatmap covers every quote', heat.length === quotes.length);
+check('heatmap weights are positive', heat.every((h) => h.weight > 0));
+check('heatmap change is a ratio, not a percent', heat.every((h) => Math.abs(h.change) < 1));
 const orders = [
   {
     id: 'o1',
@@ -263,6 +348,69 @@ const tree = (
       <TabsContent value="one">First</TabsContent>
     </Tabs>
     <Button variant="buy">Buy</Button>
+
+    {/* Advanced surface */}
+    <BuySellButtons bid={market.book.bids[0].price} ask={market.book.asks[0].price} quantity={100} />
+    <QuickTradeBar positionQuantity={400} onTrade={() => undefined} onFlatten={() => undefined} onReverse={() => undefined} />
+    <IntervalPicker value="5m" onChange={() => undefined} />
+    <TimeRangePicker value="1M" onChange={() => undefined} />
+    <SessionClock now={new Date(2026, 2, 10, 11, 0, 0)} />
+    <SessionClock session={ALWAYS_OPEN} now={new Date(2026, 2, 10, 3, 0, 0)} />
+    <DomLadder
+      book={market.book}
+      depth={6}
+      lastPrice={market.last}
+      orders={[{ price: market.book.bids[0].price, quantity: 100, side: 'buy' }]}
+      volumeAtPrice={generateVolumeAtPrice(market.trades)}
+      onPlace={() => undefined}
+      onCancel={() => undefined}
+    />
+    <VolumeProfile candles={market.candles} height={200} />
+    <MarketHeatmap items={quotesToHeatmap(quotes)} onSelect={() => undefined} />
+    <QuoteGrid quotes={quotes} selected="AAPL" onSelect={() => undefined} />
+    <DayRangeBar
+      low={quotes[0].dayLow!}
+      high={quotes[0].dayHigh!}
+      last={quotes[0].last}
+      outerLow={quotes[0].dayLow! * 0.8}
+      outerHigh={quotes[0].dayHigh! * 1.2}
+      previousClose={quotes[0].prevClose}
+    />
+    <PnlChart points={generateEquityCurve({ points: 40 })} height={180} />
+    <AccountSummary
+      account={{
+        equity: 254_320,
+        buyingPower: 180_000,
+        previousEquity: 250_000,
+        cash: 60_000,
+        marginUsed: 74_000,
+        marginAvailable: 120_000,
+        realizedPnl: 1_240,
+        unrealizedPnl: -860,
+      }}
+    />
+    <RiskMeter value={0.91} label="Concentration" />
+    <ExposureBar positions={positions} cash={50_000} onSelect={() => undefined} />
+    <BracketFields
+      side="buy"
+      entryPrice={market.last}
+      quantity={100}
+      value={{ stopLoss: market.last * 0.99, takeProfit: market.last * 1.02 }}
+      onChange={() => undefined}
+    />
+    <LeverageSlider value={20} onChange={() => undefined} />
+    <ConnectionStatus state="connected" latencyMs={620} lastMessageAt={Date.now() - 12_000} />
+    <PriceAlerts
+      symbol="AAPL"
+      prices={{ AAPL: market.last }}
+      alerts={[
+        { id: 'a1', symbol: 'AAPL', price: market.last * 1.02, direction: 'above' },
+        { id: 'a2', symbol: 'AAPL', price: market.last * 0.98, direction: 'below', triggeredAt: Date.now() },
+      ]}
+      onCreate={() => undefined}
+      onRemove={() => undefined}
+    />
+    <SymbolSearch quotes={quotes} open={false} onOpenChange={() => undefined} onSelect={() => undefined} />
   </TradingProvider>
 );
 
@@ -278,7 +426,9 @@ try {
 check('theme attribute applied', html.includes('data-tu-theme="dark"'));
 check('dark class applied for tailwind', html.includes('dark'));
 check('colorblind palette applied', html.includes('data-tu-palette="colorblind"'));
-check('canvas present for each chart', (html.match(/<canvas/g) ?? []).length === 4, (html.match(/<canvas/g) ?? []).length);
+// 3 candle charts + depth chart + P&L chart. VolumeProfile and Sparkline are
+// deliberately SVG, so they must not add to this count.
+check('one canvas per canvas-backed chart', (html.match(/<canvas/g) ?? []).length === 5, (html.match(/<canvas/g) ?? []).length);
 check('ticker duplicates the track', (html.match(/data-slot="badge"|tracking-wide/g) ?? []).length > 0);
 check('radix slots rendered', html.includes('data-slot="toggle-group"'));
 check('radix tabs rendered', html.includes('role="tablist"'));
@@ -300,6 +450,18 @@ check(
 );
 check('no "undefined" leaked into output', !html.includes('undefined'));
 check('no unresolved css var text', !html.includes('var(--undefined'));
+check('buy/sell buttons render both sides', html.includes('Buy at') && html.includes('Sell at'));
+check('session clock names the phase', html.includes('Open'));
+check('dom ladder marks my resting order', html.includes('Cancel bid at'));
+check('heatmap renders a tile per symbol', (html.match(/aria-label="[A-Z-]+, [+-]/g) ?? []).length >= quotes.length);
+check('quote grid is sortable', html.includes('aria-sort'));
+check('margin meter exposes a role', html.includes('role="meter"'));
+check('risk meter names the level', html.includes('High') || html.includes('Elevated'));
+check('bracket shows risk/reward', html.includes('Risk / reward'));
+check('leverage states liquidation distance', html.includes('liquidation'));
+check('degraded feed flagged when slow', html.includes('Degraded'));
+check('triggered alert stays listed', html.includes('Triggered'));
+check('day range bar is a meter', (html.match(/role="meter"/g) ?? []).length >= 2);
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

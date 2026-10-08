@@ -900,6 +900,795 @@
       ]
     },
     {
+      "name": "buy-sell-buttons",
+      "type": "registry:component",
+      "title": "Buy / sell buttons",
+      "description": "One-click dealing buttons with live bid and offer and the spread between them, in the FX layout: sell left, buy right.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/buy-sell-buttons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/buy-sell-buttons.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "quick-trade-bar",
+      "type": "registry:component",
+      "title": "Quick trade bar",
+      "description": "Preset sizes, buy and sell, and flatten / reverse kept behind a rule so a size chip is never next to a close-everything button.",
+      "dependencies": [
+        "@radix-ui/react-label",
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/quick-trade-bar.tsx",
+          "type": "registry:component",
+          "target": "components/trading/quick-trade-bar.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/number-field.tsx",
+          "type": "registry:component",
+          "target": "components/trading/number-field.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/label.tsx",
+          "type": "registry:component",
+          "target": "components/ui/label.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "bracket-fields",
+      "type": "registry:component",
+      "title": "Bracket + leverage",
+      "description": "Stop loss and take profit with the risk/reward the pair actually implies, plus a leverage selector that states the liquidation distance.",
+      "dependencies": [
+        "@radix-ui/react-label",
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/bracket-fields.tsx",
+          "type": "registry:component",
+          "target": "components/trading/bracket-fields.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/number-field.tsx",
+          "type": "registry:component",
+          "target": "components/trading/number-field.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/label.tsx",
+          "type": "registry:component",
+          "target": "components/ui/label.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "interval-picker",
+      "type": "registry:component",
+      "title": "Interval picker",
+      "description": "Chart timeframes: favourites stay one click away, the rest live in a grouped dropdown, and the active interval is always visible.",
+      "dependencies": [
+        "@radix-ui/react-select",
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/interval-picker.tsx",
+          "type": "registry:component",
+          "target": "components/trading/interval-picker.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/segmented-control.tsx",
+          "type": "registry:component",
+          "target": "components/trading/segmented-control.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/select.tsx",
+          "type": "registry:component",
+          "target": "components/ui/select.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/toggle-group.tsx",
+          "type": "registry:component",
+          "target": "components/ui/toggle-group.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "time-range-picker",
+      "type": "registry:component",
+      "title": "Time range picker",
+      "description": "1D through ALL, with a calendar-aware resolver so YTD means January 1st and a month back from the 31st is not thirty days.",
+      "dependencies": [
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/time-range-picker.tsx",
+          "type": "registry:component",
+          "target": "components/trading/time-range-picker.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/segmented-control.tsx",
+          "type": "registry:component",
+          "target": "components/trading/segmented-control.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/toggle-group.tsx",
+          "type": "registry:component",
+          "target": "components/ui/toggle-group.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "session-clock",
+      "type": "registry:component",
+      "title": "Session clock",
+      "description": "Market phase and a countdown to the next change, with pre and post sessions and a real always-open case for crypto.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/session-clock.tsx",
+          "type": "registry:component",
+          "target": "components/trading/session-clock.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "dom-ladder",
+      "type": "registry:component",
+      "title": "DOM ladder",
+      "description": "Click-to-trade depth of market on a fixed price axis, so the level under your cursor is still that level when you click.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/dom-ladder.tsx",
+          "type": "registry:component",
+          "target": "components/trading/dom-ladder.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "volume-profile",
+      "type": "registry:component",
+      "title": "Volume profile",
+      "description": "Volume at price with point of control and value area, spreading each bar across the range it actually covered.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/volume-profile.tsx",
+          "type": "registry:component",
+          "target": "components/trading/volume-profile.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "market-heatmap",
+      "type": "registry:component",
+      "title": "Market heatmap",
+      "description": "Squarified treemap sized by weight and coloured by direction, for a market or a book.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/market-heatmap.tsx",
+          "type": "registry:component",
+          "target": "components/trading/market-heatmap.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "quote-grid",
+      "type": "registry:component",
+      "title": "Quote grid",
+      "description": "A dense, sortable multi-instrument quote board with inline trends.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/quote-grid.tsx",
+          "type": "registry:component",
+          "target": "components/trading/quote-grid.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/price.tsx",
+          "type": "registry:component",
+          "target": "components/trading/price.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/sparkline.tsx",
+          "type": "registry:component",
+          "target": "components/trading/sparkline.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/table.tsx",
+          "type": "registry:component",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "day-range-bar",
+      "type": "registry:component",
+      "title": "Day range bar",
+      "description": "Where price sits inside its day range, with the 52-week range on the same track so the two stay comparable.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/day-range-bar.tsx",
+          "type": "registry:component",
+          "target": "components/trading/day-range-bar.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "pnl-chart",
+      "type": "registry:component",
+      "title": "P&L chart",
+      "description": "Equity curve with drawdown shaded from the running peak, because \"up on the day\" and \"below the high-water mark\" are different questions.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/pnl-chart.tsx",
+          "type": "registry:component",
+          "target": "components/trading/pnl-chart.tsx"
+        },
+        {
+          "path": "src/lib/canvas.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/canvas.ts"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "account-summary",
+      "type": "registry:component",
+      "title": "Account summary",
+      "description": "Equity, day P&L, buying power and a banded margin meter that marks the thresholds rather than fading through them.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/account-summary.tsx",
+          "type": "registry:component",
+          "target": "components/trading/account-summary.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/stat.tsx",
+          "type": "registry:component",
+          "target": "components/trading/stat.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "exposure-bar",
+      "type": "registry:component",
+      "title": "Exposure bar",
+      "description": "Gross exposure as a stacked bar with longs and shorts on separate tracks, so a hedged book does not read as flat.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/exposure-bar.tsx",
+          "type": "registry:component",
+          "target": "components/trading/exposure-bar.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/positions-table.tsx",
+          "type": "registry:component",
+          "target": "components/trading/positions-table.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/table.tsx",
+          "type": "registry:component",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "connection-status",
+      "type": "registry:component",
+      "title": "Connection status",
+      "description": "Feed health with latency and staleness, treating \"connected but slow\" as its own state rather than a green dot.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/connection-status.tsx",
+          "type": "registry:component",
+          "target": "components/trading/connection-status.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "symbol-search",
+      "type": "registry:component",
+      "title": "Symbol search",
+      "description": "Command-palette instrument search, ranked so an exact ticker beats a prefix beats a company-name hit.",
+      "dependencies": [
+        "@radix-ui/react-dialog",
+        "@radix-ui/react-slot",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/symbol-search.tsx",
+          "type": "registry:component",
+          "target": "components/trading/symbol-search.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/delta.tsx",
+          "type": "registry:component",
+          "target": "components/trading/delta.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/dialog.tsx",
+          "type": "registry:component",
+          "target": "components/ui/dialog.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "price-alerts",
+      "type": "registry:component",
+      "title": "Price alerts",
+      "description": "Alert levels with how far away each one is, and triggered alerts that stay in the list instead of vanishing.",
+      "dependencies": [
+        "@radix-ui/react-label",
+        "@radix-ui/react-slot",
+        "@radix-ui/react-toggle-group",
+        "class-variance-authority",
+        "lucide-react"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/price-alerts.tsx",
+          "type": "registry:component",
+          "target": "components/trading/price-alerts.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/number-field.tsx",
+          "type": "registry:component",
+          "target": "components/trading/number-field.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/segmented-control.tsx",
+          "type": "registry:component",
+          "target": "components/trading/segmented-control.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/button.tsx",
+          "type": "registry:component",
+          "target": "components/ui/button.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/label.tsx",
+          "type": "registry:component",
+          "target": "components/ui/label.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/toggle-group.tsx",
+          "type": "registry:component",
+          "target": "components/ui/toggle-group.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
       "name": "trading-terminal",
       "type": "registry:block",
       "title": "Trading terminal",
@@ -922,7 +1711,24 @@
         "@trading-ui/symbol-header",
         "@trading-ui/order-ticket",
         "@trading-ui/positions-table",
-        "@trading-ui/order-blotter"
+        "@trading-ui/order-blotter",
+        "@trading-ui/buy-sell-buttons",
+        "@trading-ui/quick-trade-bar",
+        "@trading-ui/bracket-fields",
+        "@trading-ui/interval-picker",
+        "@trading-ui/time-range-picker",
+        "@trading-ui/session-clock",
+        "@trading-ui/dom-ladder",
+        "@trading-ui/volume-profile",
+        "@trading-ui/market-heatmap",
+        "@trading-ui/quote-grid",
+        "@trading-ui/day-range-bar",
+        "@trading-ui/pnl-chart",
+        "@trading-ui/account-summary",
+        "@trading-ui/exposure-bar",
+        "@trading-ui/connection-status",
+        "@trading-ui/symbol-search",
+        "@trading-ui/price-alerts"
       ],
       "files": []
     }

@@ -311,6 +311,254 @@ const items = [
     ],
     deps: ['@radix-ui/react-slot', 'class-variance-authority'],
   },
+  // --- dealing ---
+  {
+    name: 'buy-sell-buttons',
+    type: 'registry:component',
+    title: 'Buy / sell buttons',
+    description:
+      'One-click dealing buttons with live bid and offer and the spread between them, in the FX layout: sell left, buy right.',
+    files: [TRADING('buy-sell-buttons'), ...LIB.format, ...LIB.hooks, ...LIB.theme, ...LIB.utils],
+  },
+  {
+    name: 'quick-trade-bar',
+    type: 'registry:component',
+    title: 'Quick trade bar',
+    description:
+      'Preset sizes, buy and sell, and flatten / reverse kept behind a rule so a size chip is never next to a close-everything button.',
+    files: [
+      TRADING('quick-trade-bar'),
+      TRADING('number-field'),
+      UI.button,
+      UI.label,
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-label', '@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+  {
+    name: 'bracket-fields',
+    type: 'registry:component',
+    title: 'Bracket + leverage',
+    description:
+      'Stop loss and take profit with the risk/reward the pair actually implies, plus a leverage selector that states the liquidation distance.',
+    files: [
+      TRADING('bracket-fields'),
+      TRADING('number-field'),
+      UI.button,
+      UI.label,
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-label', '@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+
+  // --- time ---
+  {
+    name: 'interval-picker',
+    type: 'registry:component',
+    title: 'Interval picker',
+    description:
+      'Chart timeframes: favourites stay one click away, the rest live in a grouped dropdown, and the active interval is always visible.',
+    files: [
+      TRADING('interval-picker'),
+      TRADING('segmented-control'),
+      UI.select,
+      UI['toggle-group'],
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-select', '@radix-ui/react-toggle-group', 'class-variance-authority', 'lucide-react'],
+  },
+  {
+    name: 'time-range-picker',
+    type: 'registry:component',
+    title: 'Time range picker',
+    description:
+      '1D through ALL, with a calendar-aware resolver so YTD means January 1st and a month back from the 31st is not thirty days.',
+    files: [
+      TRADING('time-range-picker'),
+      TRADING('segmented-control'),
+      UI['toggle-group'],
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-toggle-group', 'class-variance-authority'],
+  },
+  {
+    name: 'session-clock',
+    type: 'registry:component',
+    title: 'Session clock',
+    description:
+      'Market phase and a countdown to the next change, with pre and post sessions and a real always-open case for crypto.',
+    files: [TRADING('session-clock'), UI.badge, ...LIB.utils],
+    deps: ['@radix-ui/react-slot', 'class-variance-authority'],
+  },
+
+  // --- advanced market data ---
+  {
+    name: 'dom-ladder',
+    type: 'registry:component',
+    title: 'DOM ladder',
+    description:
+      'Click-to-trade depth of market on a fixed price axis, so the level under your cursor is still that level when you click.',
+    files: [TRADING('dom-ladder'), ...LIB.format, ...LIB.theme, ...LIB.utils],
+  },
+  {
+    name: 'volume-profile',
+    type: 'registry:component',
+    title: 'Volume profile',
+    description:
+      'Volume at price with point of control and value area, spreading each bar across the range it actually covered.',
+    files: [TRADING('volume-profile'), ...LIB.format, ...LIB.theme, ...LIB.utils],
+  },
+  {
+    name: 'market-heatmap',
+    type: 'registry:component',
+    title: 'Market heatmap',
+    description:
+      'Squarified treemap sized by weight and coloured by direction, for a market or a book.',
+    files: [TRADING('market-heatmap'), ...LIB.format, ...LIB.types, ...LIB.utils],
+  },
+  {
+    name: 'quote-grid',
+    type: 'registry:component',
+    title: 'Quote grid',
+    description: 'A dense, sortable multi-instrument quote board with inline trends.',
+    files: [
+      ...STATES,
+      TRADING('quote-grid'),
+      TRADING('delta'),
+      TRADING('price'),
+      TRADING('sparkline'),
+      UI.badge,
+      UI.table,
+      ...LIB.format,
+      ...LIB.hooks,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+  {
+    name: 'day-range-bar',
+    type: 'registry:component',
+    title: 'Day range bar',
+    description:
+      'Where price sits inside its day range, with the 52-week range on the same track so the two stay comparable.',
+    files: [TRADING('day-range-bar'), ...LIB.format, ...LIB.theme, ...LIB.utils],
+  },
+
+  // --- account and risk ---
+  {
+    name: 'pnl-chart',
+    type: 'registry:component',
+    title: 'P&L chart',
+    description:
+      'Equity curve with drawdown shaded from the running peak, because "up on the day" and "below the high-water mark" are different questions.',
+    files: [
+      TRADING('pnl-chart'),
+      ...LIB.canvas,
+      ...LIB.format,
+      ...LIB.hooks,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+  },
+  {
+    name: 'account-summary',
+    type: 'registry:component',
+    title: 'Account summary',
+    description:
+      'Equity, day P&L, buying power and a banded margin meter that marks the thresholds rather than fading through them.',
+    files: [
+      TRADING('account-summary'),
+      TRADING('delta'),
+      TRADING('stat'),
+      UI.badge,
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.types,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+  {
+    name: 'exposure-bar',
+    type: 'registry:component',
+    title: 'Exposure bar',
+    description:
+      'Gross exposure as a stacked bar with longs and shorts on separate tracks, so a hedged book does not read as flat.',
+    files: [
+      TRADING('exposure-bar'),
+      TRADING('positions-table'),
+      TRADING('delta'),
+      UI.badge,
+      UI.button,
+      UI.table,
+      ...STATES,
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+
+  // --- status and search ---
+  {
+    name: 'connection-status',
+    type: 'registry:component',
+    title: 'Connection status',
+    description:
+      'Feed health with latency and staleness, treating "connected but slow" as its own state rather than a green dot.',
+    files: [TRADING('connection-status'), UI.badge, ...LIB.utils],
+    deps: ['@radix-ui/react-slot', 'class-variance-authority'],
+  },
+  {
+    name: 'symbol-search',
+    type: 'registry:component',
+    title: 'Symbol search',
+    description:
+      'Command-palette instrument search, ranked so an exact ticker beats a prefix beats a company-name hit.',
+    files: [
+      TRADING('symbol-search'),
+      TRADING('delta'),
+      UI.badge,
+      UI.dialog,
+      ...LIB.format,
+      ...LIB.types,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-dialog', '@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+  {
+    name: 'price-alerts',
+    type: 'registry:component',
+    title: 'Price alerts',
+    description:
+      'Alert levels with how far away each one is, and triggered alerts that stay in the list instead of vanishing.',
+    files: [
+      ...STATES,
+      TRADING('price-alerts'),
+      TRADING('number-field'),
+      TRADING('segmented-control'),
+      UI.badge,
+      UI.button,
+      UI.label,
+      UI['toggle-group'],
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+    deps: [
+      '@radix-ui/react-label',
+      '@radix-ui/react-slot',
+      '@radix-ui/react-toggle-group',
+      'class-variance-authority',
+      'lucide-react',
+    ],
+  },
+
 ];
 
 /** The whole terminal in one install. */
