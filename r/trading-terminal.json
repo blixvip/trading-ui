@@ -24,6 +24,8 @@
     "@trading-ui/order-ticket",
     "@trading-ui/positions-table",
     "@trading-ui/order-blotter",
+    "@trading-ui/fills-table",
+    "@trading-ui/indicator-pane",
     "@trading-ui/buy-sell-buttons",
     "@trading-ui/quick-trade-bar",
     "@trading-ui/bracket-fields",
@@ -38,6 +40,7 @@
     "@trading-ui/pnl-chart",
     "@trading-ui/account-summary",
     "@trading-ui/exposure-bar",
+    "@trading-ui/allocation-bar",
     "@trading-ui/connection-status",
     "@trading-ui/symbol-search",
     "@trading-ui/price-alerts"

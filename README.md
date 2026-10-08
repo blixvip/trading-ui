@@ -1,6 +1,6 @@
 # trading-ui
 
-**The trading layer for shadcn/ui.** 35 components: candlestick, depth, volume-
+**The trading layer for shadcn/ui.** 38 components: candlestick, depth, volume-
 profile and P&L charts, an order book and a click-to-trade DOM ladder, time and
 sales, dealing buttons, an order ticket with brackets and leverage, positions,
 a blotter, account and risk meters, and the time controls a chart needs — built
@@ -30,6 +30,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/
 | `VolumeProfile` | Volume at price with point of control and value area |
 | `PnlChart` | Equity curve with drawdown shaded from the running peak |
 | `Sparkline` | Inline SVG trend line with area fill and baseline |
+| `IndicatorPane` | The sub-pane under the chart: Wilder RSI, MACD with histogram, volume |
 
 ### Market data
 
@@ -56,6 +57,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/
 | `LeverageSlider` | Leverage with its liquidation distance stated |
 | `PositionsTable` | Open positions marked to market, signed quantities |
 | `OrderBlotter` | Today's orders and their state, with inline cancel |
+| `FillsTable` | Executions with fee and maker/taker, at the weighted average price |
 
 ### Account and risk
 
@@ -64,6 +66,7 @@ npx shadcn@latest add https://raw.githubusercontent.com/blixvip/trading-ui/main/
 | `AccountSummary` | Equity, day P&L, buying power, margin |
 | `MarginBar` `RiskMeter` | Banded meters that mark their thresholds |
 | `ExposureBar` | Gross exposure, longs and shorts on separate tracks |
+| `AllocationBar` | Portfolio weights by gross exposure, with a concentration warning |
 
 ### Time and status
 
@@ -186,6 +189,20 @@ a buy even when it's lower than the one before it.
 **Positions use signed quantities.** One formula covers long and short, so no
 code path can disagree about which way a short makes money.
 
+**Fills are not orders, and exposure is gross.** `OrderBlotter` answers what you
+sent; `FillsTable` answers what you got, blended at the quantity-weighted
+average — an unweighted mean of fill prices is wrong on every partial sequence
+and wrong in a way that looks right. `AllocationBar` weighs by gross rather
+than net, because a book long 1M and short 1M is fully deployed on both legs
+and nets to nothing.
+
+**Indicators get their own pane.** RSI is 0-100, MACD straddles zero, volume is
+unbounded. Folding any of them into the price scale is what makes a chart
+unreadable, so `IndicatorPane` keeps its own domain and shares only the x-axis.
+RSI is Wilder-smoothed, and the MACD signal EMA is seeded only from the bars
+where the MACD line exists — treating the leading nulls as zeroes prints a
+crossover that never happened.
+
 **Empty and loading are designed, not left over.** A trading screen is empty
 before the open and on every new account, so each list component ships an
 authored SVG empty state and a skeleton shaped like the thing it is waiting for
@@ -218,7 +235,7 @@ exactly the moment a trader needs to see their exposure and get out.
 ```bash
 npm install
 npm run dev        # product site at http://localhost:4310
-npm test           # 128 assertions: formatting, market invariants, order rules,
+npm test           # 162 assertions: formatting, market invariants, order rules,
                    # SSR render, feed resilience, boundary reset logic
 npm run typecheck
 npm run build      # typecheck + test + library + registry

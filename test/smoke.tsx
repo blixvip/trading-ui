@@ -9,9 +9,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import {
   Badge,
   Button,
+  AllocationBar,
   CandleChart,
   Delta,
   DepthChart,
+  FillsTable,
+  IndicatorPane,
   NumberField,
   OrderBlotter,
   OrderBook,
@@ -41,6 +44,8 @@ import {
   formatMoney,
   formatPercent,
   formatPrice,
+  generateCandles,
+  generateFills,
   generateQuotes,
   roundToTick,
   stepMarket,
@@ -72,7 +77,12 @@ import {
   quotesToHeatmap,
   resolveSession,
   resolveTimeRange,
+  allocate,
+  averageFillPrice,
+  ema,
+  macd,
   resetKeysChanged,
+  rsi,
   toArray,
 } from '../src/lib';
 
@@ -506,6 +516,9 @@ survives('TradeTape', (b) => <TradeTape trades={b} />);
 survives('PositionsTable', (b) => <PositionsTable positions={b} />);
 survives('OrderBlotter', (b) => <OrderBlotter orders={b} />);
 survives('MarketHeatmap', (b) => <MarketHeatmap items={b} />);
+survives('FillsTable', (b) => <FillsTable fills={b} />);
+survives('AllocationBar', (b) => <AllocationBar positions={b} />);
+survives('IndicatorPane', (b) => <IndicatorPane candles={b} />);
 
 // Normalization must not cost referential stability, or every useMemo in the
 // library re-runs on every render of a component that has no data yet.
@@ -526,6 +539,94 @@ check('reset on a longer key list', resetKeysChanged(['AAPL'], ['AAPL', '1m']));
 check('reset on a shorter key list', resetKeysChanged(['AAPL', '1m'], ['AAPL']));
 check('NaN keys compare as equal (Object.is)', !resetKeysChanged([NaN], [NaN]));
 check('empty key lists never reset', !resetKeysChanged([], []));
+
+/* Indicators. These are the numbers a trader acts on, and every one of them
+   has a plausible-looking wrong implementation, so they are pinned against
+   hand-worked values rather than against themselves. */
+console.log('\nindicators');
+{
+  const flat = new Array(40).fill(100);
+  const rising = Array.from({ length: 40 }, (_, i) => 100 + i);
+  const falling = Array.from({ length: 40 }, (_, i) => 140 - i);
+
+  check('rsi is null before the lookback', rsi(rising, 14)[13] === null);
+  check('rsi starts at the lookback bar', rsi(rising, 14)[14] !== null);
+  check('rsi of an unbroken rise is 100', rsi(rising, 14)[39] === 100, rsi(rising, 14)[39]);
+  check('rsi of an unbroken fall is 0', rsi(falling, 14)[39] === 0, rsi(falling, 14)[39]);
+  // A flat series has zero gain and zero loss; the 0/0 branch must not produce NaN.
+  check('rsi of a flat series is finite', Number.isFinite(rsi(flat, 14)[39] as number), rsi(flat, 14)[39]);
+  check('rsi stays inside 0-100', rsi(generateCandles({ count: 120 }).map((c) => c.close), 14)
+    .every((v) => v === null || (v >= 0 && v <= 100)));
+  check('rsi of too-short input is all null', rsi([1, 2, 3], 14).every((v) => v === null));
+
+  check('ema seeds with the simple mean', ema([2, 4, 6, 8], 4)[3] === 5, ema([2, 4, 6, 8], 4)[3]);
+  check('ema is null before the window', ema([2, 4, 6, 8], 4)[2] === null);
+  check('ema of a constant is that constant', ema(flat, 10)[39] === 100);
+
+  const m = macd(rising, 12, 26, 9);
+  check('macd is null before the slow ema', m[24].macd === null);
+  check('macd line is positive on a rise', (m[39].macd as number) > 0, m[39].macd);
+  check('macd signal is not dragged to zero by leading nulls',
+    m[39].signal !== null && (m[39].signal as number) > 0, m[39].signal);
+  check('macd histogram is line minus signal',
+    Math.abs((m[39].histogram as number) - ((m[39].macd as number) - (m[39].signal as number))) < 1e-9);
+  check('macd of a flat series is zero', Math.abs(macd(flat)[39].macd as number) < 1e-9);
+}
+
+/* Fills. The weighted average is the one a desk quotes; an unweighted mean of
+   fill prices is wrong on every partial sequence and wrong plausibly. */
+console.log('\nfills');
+{
+  const fills = generateFills({ count: 12, seed: 4 });
+  check('generateFills is deterministic',
+    JSON.stringify(generateFills({ count: 6, seed: 4 })) === JSON.stringify(generateFills({ count: 6, seed: 4 })));
+  check('fills group into parent orders', new Set(fills.map((f) => f.orderId)).size < fills.length);
+  check('makers are rebated, takers charged',
+    fills.filter((f) => f.liquidity === 'maker').every((f) => (f.fee ?? 0) <= 0) &&
+    fills.filter((f) => f.liquidity === 'taker').every((f) => (f.fee ?? 0) >= 0));
+  check('fills run newest first', fills.every((f, i) => i === 0 || f.time <= fills[i - 1].time));
+
+  const weighted = averageFillPrice([
+    { id: 'a', symbol: 'X', time: 0, side: 'buy', quantity: 900, price: 100 },
+    { id: 'b', symbol: 'X', time: 0, side: 'buy', quantity: 100, price: 110 },
+  ]);
+  // Unweighted this would be 105. Weighted it is 101.
+  check('average fill price is quantity-weighted', Math.abs(weighted - 101) < 1e-9, weighted);
+  check('average fill price of nothing is 0', averageFillPrice([]) === 0);
+  check('average fill price ignores a non-finite row',
+    averageFillPrice([
+      { id: 'a', symbol: 'X', time: 0, side: 'buy', quantity: 100, price: 50 },
+      { id: 'b', symbol: 'X', time: 0, side: 'buy', quantity: NaN, price: NaN },
+    ]) === 50);
+}
+
+/* Allocation. Gross, not net - netting reports an empty portfolio for a
+   market-neutral book that is in fact fully deployed on both legs. */
+console.log('\nallocation');
+{
+  const hedged = [
+    { symbol: 'AAPL', quantity: 100, avgPrice: 100, markPrice: 100 },
+    { symbol: 'TSLA', quantity: -100, avgPrice: 100, markPrice: 100 },
+  ];
+  const slices = allocate(hedged);
+  check('a market-neutral book is not empty', slices.length === 2);
+  check('hedged legs weigh the same', Math.abs(slices[0].weight - slices[1].weight) < 1e-9);
+  check('weights sum to 1', Math.abs(slices.reduce((s, x) => s + x.weight, 0) - 1) < 1e-9);
+  check('the short leg is flagged', slices.some((s) => s.short));
+  check('largest position ranks first',
+    allocate([
+      { symbol: 'SMALL', quantity: 1, avgPrice: 1, markPrice: 1 },
+      { symbol: 'BIG', quantity: 100, avgPrice: 10, markPrice: 10 },
+    ])[0].symbol === 'BIG');
+  check('cash becomes its own slice', allocate(hedged, 20_000).some((s) => s.symbol === 'Cash'));
+  check('the tail folds into Other',
+    allocate(generateQuotes().map((q, i) => ({
+      symbol: q.symbol, quantity: 10 * (i + 1), avgPrice: q.last, markPrice: q.last,
+    })), 0, 3).some((s) => s.symbol.startsWith('Other')));
+  check('zero-value positions drop out',
+    allocate([{ symbol: 'X', quantity: 0, avgPrice: 10, markPrice: 10 }]).length === 0);
+  check('an empty book allocates nothing', allocate([]).length === 0);
+}
 
 console.log(failures === 0 ? '\nALL PASS' : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

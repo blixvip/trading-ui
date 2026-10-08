@@ -8,6 +8,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `FillsTable` - executions rather than instructions, with fee, maker/taker and
+  a quantity-weighted average price. Nothing covered fills before; the blotter
+  only ever showed orders.
+- `IndicatorPane` - the sub-pane under a price chart: Wilder RSI, MACD with
+  histogram, or volume, each on its own scale, sharing the chart x-axis.
+- `AllocationBar` - portfolio weights by gross exposure with a concentration
+  warning, shorts hatched as well as coloured.
+- `Fill` domain type and `generateFills` in the mock feed.
 - `PanelBoundary` — a React error boundary that contains a render failure to a
   single widget instead of unmounting the terminal, with `resetKeys` so the
   panel recovers on the next instrument rather than stranding the user, and an

@@ -319,6 +319,36 @@ const items = [
     ],
     deps: ['@radix-ui/react-slot', 'class-variance-authority'],
   },
+  {
+    name: 'fills-table',
+    type: 'registry:component',
+    title: 'Fills table',
+    description:
+      'Executions rather than instructions: every fill with its price, fee and maker/taker flag, totalled at the quantity-weighted average.',
+    files: [
+      ...STATES,
+      TRADING('fills-table'),
+      UI.badge,
+      UI.table,
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
+    deps: ['@radix-ui/react-slot', 'class-variance-authority'],
+  },
+  {
+    name: 'indicator-pane',
+    type: 'registry:component',
+    title: 'Indicator pane',
+    description:
+      'The sub-pane under a price chart: Wilder RSI, MACD with histogram, or volume - on its own scale, sharing the chart x-axis.',
+    files: [
+      TRADING('indicator-pane'),
+      ...LIB.canvas,
+      ...LIB.hooks,
+      ...LIB.utils,
+    ],
+  },
   // --- dealing ---
   {
     name: 'buy-sell-buttons',
@@ -510,6 +540,20 @@ const items = [
       ...LIB.utils,
     ],
     deps: ['@radix-ui/react-slot', 'class-variance-authority', 'lucide-react'],
+  },
+  {
+    name: 'allocation-bar',
+    type: 'registry:component',
+    title: 'Allocation bar',
+    description:
+      'Portfolio weights by gross exposure as one stacked bar plus a legend, with a concentration warning and shorts hatched as well as coloured.',
+    files: [
+      ...STATES,
+      TRADING('allocation-bar'),
+      ...LIB.format,
+      ...LIB.theme,
+      ...LIB.utils,
+    ],
   },
 
   // --- status and search ---

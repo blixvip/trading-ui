@@ -9,7 +9,10 @@ import {
   Delta,
   DepthChart,
   DomLadder,
+  AllocationBar,
   ExposureBar,
+  FillsTable,
+  IndicatorPane,
   IntervalPicker,
   LeverageSlider,
   MarketHeatmap,
@@ -30,6 +33,7 @@ import {
   TimeRangePicker,
   TradeTape,
   VolumeProfile,
+  generateFills,
   Watchlist,
   formatCompact,
   generateEquityCurve,
@@ -62,6 +66,7 @@ export function buildCatalogue(
 ): CatalogueEntry[] {
   const quote = quotes[0];
   const change = quote.last - quote.prevClose;
+  const fills = generateFills({ symbol: quote.symbol, mid: quote.last, count: 10 });
 
   return [
     {
@@ -281,6 +286,21 @@ export function buildCatalogue(
       ),
     },
     {
+      id: 'indicator-pane',
+      name: 'IndicatorPane',
+      blurb: 'The sub-pane under the chart: Wilder RSI, MACD with histogram, or volume.',
+      note: 'Separate from the price chart on purpose — RSI is 0-100, MACD straddles zero, volume is unbounded, and folding any of them into the price scale is what makes a chart unreadable.',
+      wide: true,
+      preview: (
+        <Panel title="Indicators" padded>
+          <div className="flex flex-col gap-2">
+            <IndicatorPane candles={market.candles} kind="rsi" height={88} />
+            <IndicatorPane candles={market.candles} kind="macd" height={88} />
+          </div>
+        </Panel>
+      ),
+    },
+    {
       id: 'volume-profile',
       name: 'VolumeProfile',
       blurb: 'Volume traded at each price, with the point of control and value area marked.',
@@ -368,6 +388,29 @@ export function buildCatalogue(
           <div className="px-3 pb-3">
             <RiskMeter value={0.91} label="Concentration" />
           </div>
+        </Panel>
+      ),
+    },
+    {
+      id: 'fills-table',
+      name: 'FillsTable',
+      blurb: 'Executions with price, fee and maker/taker, totalled at the weighted average.',
+      note: 'The blotter answers "what did I send". This answers "what did I get, at what blended price, and what did it cost" — different questions the moment an order fills in pieces.',
+      wide: true,
+      preview: (
+        <Panel title="Fills">
+          <FillsTable fills={fills} />
+        </Panel>
+      ),
+    },
+    {
+      id: 'allocation-bar',
+      name: 'AllocationBar',
+      blurb: 'Portfolio weights by gross exposure, with a concentration warning.',
+      note: 'An account can look healthy on every other panel — margin fine, P&L green — while sitting in one name. Shorts are hatched as well as coloured, so the split survives greyscale.',
+      preview: (
+        <Panel title="Allocation" padded>
+          <AllocationBar positions={positions} cash={50_000} onSelect={() => undefined} />
         </Panel>
       ),
     },

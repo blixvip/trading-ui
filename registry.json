@@ -918,6 +918,101 @@
       ]
     },
     {
+      "name": "fills-table",
+      "type": "registry:component",
+      "title": "Fills table",
+      "description": "Executions rather than instructions: every fill with its price, fee and maker/taker flag, totalled at the quantity-weighted average.",
+      "dependencies": [
+        "@radix-ui/react-slot",
+        "class-variance-authority"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/fills-table.tsx",
+          "type": "registry:component",
+          "target": "components/trading/fills-table.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/badge.tsx",
+          "type": "registry:component",
+          "target": "components/ui/badge.tsx"
+        },
+        {
+          "path": "src/lib/components/ui/table.tsx",
+          "type": "registry:component",
+          "target": "components/ui/table.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
+      "name": "indicator-pane",
+      "type": "registry:component",
+      "title": "Indicator pane",
+      "description": "The sub-pane under a price chart: Wilder RSI, MACD with histogram, or volume - on its own scale, sharing the chart x-axis.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/indicator-pane.tsx",
+          "type": "registry:component",
+          "target": "components/trading/indicator-pane.tsx"
+        },
+        {
+          "path": "src/lib/canvas.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/canvas.ts"
+        },
+        {
+          "path": "src/lib/hooks.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/hooks.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
       "name": "buy-sell-buttons",
       "type": "registry:component",
       "title": "Buy / sell buttons",
@@ -1546,6 +1641,54 @@
       ]
     },
     {
+      "name": "allocation-bar",
+      "type": "registry:component",
+      "title": "Allocation bar",
+      "description": "Portfolio weights by gross exposure as one stacked bar plus a legend, with a concentration warning and shorts hatched as well as coloured.",
+      "files": [
+        {
+          "path": "src/lib/components/trading/empty-state.tsx",
+          "type": "registry:component",
+          "target": "components/trading/empty-state.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/illustrations.tsx",
+          "type": "registry:component",
+          "target": "components/trading/illustrations.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/skeletons.tsx",
+          "type": "registry:component",
+          "target": "components/trading/skeletons.tsx"
+        },
+        {
+          "path": "src/lib/components/trading/allocation-bar.tsx",
+          "type": "registry:component",
+          "target": "components/trading/allocation-bar.tsx"
+        },
+        {
+          "path": "src/lib/format.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/format.ts"
+        },
+        {
+          "path": "src/lib/types.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/types.ts"
+        },
+        {
+          "path": "src/lib/theme/theme-provider.tsx",
+          "type": "registry:component",
+          "target": "components/trading/theme-provider.tsx"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib",
+          "target": "lib/trading/utils.ts"
+        }
+      ]
+    },
+    {
       "name": "connection-status",
       "type": "registry:component",
       "title": "Connection status",
@@ -1731,6 +1874,8 @@
         "@trading-ui/order-ticket",
         "@trading-ui/positions-table",
         "@trading-ui/order-blotter",
+        "@trading-ui/fills-table",
+        "@trading-ui/indicator-pane",
         "@trading-ui/buy-sell-buttons",
         "@trading-ui/quick-trade-bar",
         "@trading-ui/bracket-fields",
@@ -1745,6 +1890,7 @@
         "@trading-ui/pnl-chart",
         "@trading-ui/account-summary",
         "@trading-ui/exposure-bar",
+        "@trading-ui/allocation-bar",
         "@trading-ui/connection-status",
         "@trading-ui/symbol-search",
         "@trading-ui/price-alerts"

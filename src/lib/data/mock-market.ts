@@ -1,7 +1,7 @@
 'use client';
 
 import { decimalsOf, roundToTick } from '../format';
-import type { BookLevel, Candle, OrderBookSnapshot, Quote, Trade } from '../types';
+import type { BookLevel, Candle, Fill, OrderBookSnapshot, Quote, Side, Trade } from '../types';
 
 /**
  * A deterministic mock market. Seeded so screenshots, stories and tests are
@@ -413,4 +413,76 @@ export function generateVolumeAtPrice(
     out[price] = (out[price] ?? 0) + trade.size;
   }
   return out;
+}
+
+export interface GenerateFillsOptions {
+  count?: number;
+  symbol?: string;
+  mid?: number;
+  tickSize?: number;
+  endTime?: number;
+  intervalMs?: number;
+  seed?: number;
+  /** Fee rate applied to notional. Makers get the negative of it as a rebate. */
+  feeRate?: number;
+}
+
+/**
+ * A session's executions, partial-filled the way a real order works through
+ * the book: a few prints against one order id, at drifting prices.
+ */
+export function generateFills(options: GenerateFillsOptions = {}): Fill[] {
+  const {
+    count = 12,
+    symbol = 'AAPL',
+    mid = 182.4,
+    tickSize = 0.01,
+    endTime = Date.now(),
+    intervalMs = 95_000,
+    seed = 37,
+    feeRate = 0.0002,
+  } = options;
+
+  const rnd = createRandom(seed);
+  const decimals = decimalsOf(tickSize);
+  const midTicks = Math.round(mid / tickSize);
+  const fills: Fill[] = [];
+  let time = endTime;
+  let order = 0;
+  let remaining = 0;
+  let side: Side = 'buy';
+
+  for (let i = 0; i < count; i++) {
+    // Start a new parent order once the last one is worked off, so the table
+    // shows genuine partial sequences rather than N unrelated singles.
+    if (remaining <= 0) {
+      order += 1;
+      side = rnd() > 0.5 ? 'buy' : 'sell';
+      remaining = 100 * (2 + Math.floor(rnd() * 6));
+    }
+
+    const quantity = Math.min(remaining, 100 * (1 + Math.floor(rnd() * 3)));
+    remaining -= quantity;
+
+    const price = Number(((midTicks + Math.round(gaussian(rnd) * 3)) * tickSize).toFixed(decimals));
+    const maker = rnd() > 0.55;
+    const notional = price * quantity;
+
+    fills.push({
+      id: `f${i}-${time}`,
+      orderId: `o${order}`,
+      symbol,
+      time,
+      side,
+      quantity,
+      price,
+      liquidity: maker ? 'maker' : 'taker',
+      // Makers are paid for providing liquidity; a negative fee is a rebate.
+      fee: Number((notional * feeRate * (maker ? -0.4 : 1)).toFixed(2)),
+    });
+
+    time -= Math.max(5_000, intervalMs * (0.2 + rnd() * 1.6));
+  }
+
+  return fills;
 }

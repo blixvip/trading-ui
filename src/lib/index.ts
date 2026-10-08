@@ -129,6 +129,15 @@ export {
   type CandleChartKind,
   type MovingAverage,
 } from './components/trading/candle-chart';
+export {
+  IndicatorPane,
+  ema,
+  macd,
+  rsi,
+  type IndicatorKind,
+  type IndicatorPaneProps,
+  type MacdPoint,
+} from './components/trading/indicator-pane';
 export { DepthChart, type DepthChartProps } from './components/trading/depth-chart';
 
 export {
@@ -193,6 +202,12 @@ export {
 } from './components/trading/account-summary';
 export { ExposureBar, type ExposureBarProps } from './components/trading/exposure-bar';
 export {
+  AllocationBar,
+  allocate,
+  type AllocationBarProps,
+  type AllocationSlice,
+} from './components/trading/allocation-bar';
+export {
   BracketFields,
   LeverageSlider,
   type BracketFieldsProps,
@@ -225,6 +240,11 @@ export {
   type PositionRow,
 } from './components/trading/positions-table';
 export { OrderBlotter, type OrderBlotterProps } from './components/trading/order-blotter';
+export {
+  FillsTable,
+  averageFillPrice,
+  type FillsTableProps,
+} from './components/trading/fills-table';
 
 // --- utilities ---
 export { cn, toArray, toBook } from './utils';
@@ -256,6 +276,7 @@ export {
   createRandom,
   generateCandles,
   generateOrderBook,
+  generateFills,
   generateTrades,
   generateQuotes,
   createMarket,
@@ -268,6 +289,7 @@ export type {
   MarketConfig,
   GenerateCandlesOptions,
   GenerateBookOptions,
+  GenerateFillsOptions,
   GenerateTradesOptions,
   GenerateEquityOptions,
   EquitySample,
@@ -282,6 +304,7 @@ export type {
   BookLevel,
   OrderBookSnapshot,
   Trade,
+  Fill,
   Quote,
   Position,
   Order,

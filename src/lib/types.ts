@@ -96,3 +96,25 @@ export interface Instrument {
   /** Quote-currency symbol, e.g. "$". */
   currency?: string;
 }
+
+/**
+ * One execution. Distinct from an `Order`: an order is an instruction, a fill
+ * is what actually happened to it, and a single order can produce many fills
+ * at different prices. Reconciliation, cost basis and fee accounting all work
+ * off fills, never off orders.
+ */
+export interface Fill {
+  id: string;
+  /** The order this execution belongs to, for grouping a partial sequence. */
+  orderId?: string;
+  symbol: string;
+  time: number;
+  side: Side;
+  quantity: number;
+  price: number;
+  /** Commission or exchange fee, in the quote currency. Negative is a rebate. */
+  fee?: number;
+  /** `maker` rested and was hit; `taker` crossed the spread. Drives the fee. */
+  liquidity?: 'maker' | 'taker';
+  venue?: string;
+}

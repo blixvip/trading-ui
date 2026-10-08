@@ -36,7 +36,7 @@ inventing the order ticket themselves.
 - A live, running terminal driven by a deterministic mock feed — the real
   components, not screenshots.
 - Both palettes and both themes, switchable in place.
-- 128 passing assertions; the package verified in a from-scratch consumer app.
+- 162 passing assertions; the package verified in a from-scratch consumer app.
 
 ## Non-negotiable truths
 
