@@ -271,6 +271,12 @@ library connects to a venue. Wire your own feed to the plain types in
 `src/lib/types.ts` (`Candle`, `OrderBookSnapshot`, `Trade`, `Quote`,
 `Position`, `Order`).
 
+## Contributors
+
+Thank you to everyone who has helped build trading-ui. Want to join them? Read [CONTRIBUTING.md](CONTRIBUTING.md) and pick one of the [good first issues](https://github.com/blixvip/trading-ui/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22).
+
+<a href="https://github.com/blixvip/trading-ui/graphs/contributors"><img src="https://contrib.rocks/image?repo=blixvip/trading-ui" alt="Contributors" /></a>
+
 ## License
 
 MIT
