@@ -430,6 +430,7 @@ export interface GenerateFillsOptions {
 /**
  * A session's executions, partial-filled the way a real order works through
  * the book: a few prints against one order id, at drifting prices.
+ * Output is deterministic for a given `seed` and `endTime`.
  */
 export function generateFills(options: GenerateFillsOptions = {}): Fill[] {
   const {

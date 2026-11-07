@@ -267,13 +267,15 @@ console.log('derived market data');
   const totalTrades = market.trades.reduce((sum, t) => sum + t.size, 0);
   check('volume-at-price conserves size', totalVap === totalTrades, { totalVap, totalTrades });
 
-  const curve = generateEquityCurve({ points: 60, seed: 3 });
+  const fixedEndTime = 1_710_000_000_000;
+  const curve = generateEquityCurve({ points: 60, seed: 3, endTime: fixedEndTime });
   check('equity curve length', curve.length === 60, curve.length);
   check('equity stays positive', curve.every((p) => p.equity > 0));
   check('equity curve is ordered', curve.every((p, i, a) => i === 0 || p.time > a[i - 1].time));
   check(
     'equity curve is deterministic',
-    generateEquityCurve({ points: 60, seed: 3 })[59].equity === curve[59].equity,
+    JSON.stringify(generateEquityCurve({ points: 60, seed: 3, endTime: fixedEndTime })) ===
+      JSON.stringify(curve),
   );
   check(
     'equity curve actually drops below its peak',
@@ -577,9 +579,11 @@ console.log('\nindicators');
    fill prices is wrong on every partial sequence and wrong plausibly. */
 console.log('\nfills');
 {
-  const fills = generateFills({ count: 12, seed: 4 });
+  const fixedEndTime = 1_710_000_000_000;
+  const fills = generateFills({ count: 12, seed: 4, endTime: fixedEndTime });
   check('generateFills is deterministic',
-    JSON.stringify(generateFills({ count: 6, seed: 4 })) === JSON.stringify(generateFills({ count: 6, seed: 4 })));
+    JSON.stringify(generateFills({ count: 6, seed: 4, endTime: fixedEndTime })) ===
+      JSON.stringify(generateFills({ count: 6, seed: 4, endTime: fixedEndTime })));
   check('fills group into parent orders', new Set(fills.map((f) => f.orderId)).size < fills.length);
   check('makers are rebated, takers charged',
     fills.filter((f) => f.liquidity === 'maker').every((f) => (f.fee ?? 0) <= 0) &&
