@@ -1,5 +1,7 @@
 # Contributing
 
+> 💬 **Before you open a PR, join the [blix open source Discord](https://discord.gg/wJfHQXfEMM).** It's the home for contributors across every blixvip repo: ask questions, run ideas by us, and talk through your PR.
+
 Thanks for looking. This is a component library, so most contributions are
 either a new component or a fix to how an existing one behaves against real
 market data.
